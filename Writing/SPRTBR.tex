@@ -1,0 +1,154 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{natbib}
+
+%Packages
+\usepackage{pdflscape}
+\usepackage{fixltx2e}
+\usepackage{textcomp}
+\usepackage{fullpage}
+\usepackage{float}
+\usepackage{latexsym}
+\usepackage{url}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{array}
+\usepackage[version=3]{mhchem}
+\usepackage{ifthen}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\usepackage{amstext}
+\usepackage{enumerate}
+\usepackage[osf]{mathpazo}
+\usepackage{dcolumn}
+\usepackage{lineno}
+\usepackage{dcolumn}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+
+\pagenumbering{arabic}
+
+
+%Pagination style and stuff
+\linespread{2}
+\raggedright
+\setlength{\parindent}{0.5in}
+\setcounter{secnumdepth}{0} 
+\renewcommand{\section}[1]{%
+\bigskip
+\begin{center}
+\begin{Large}
+\normalfont\scshape #1
+\medskip
+\end{Large}
+\end{center}}
+\renewcommand{\subsection}[1]{%
+\bigskip
+\begin{center}
+\begin{large}
+\normalfont\itshape #1
+\end{large}
+\end{center}}
+\renewcommand{\subsubsection}[1]{%
+\vspace{2ex}
+\noindent
+\textit{#1.}---}
+\renewcommand{\tableofcontents}{}
+%\bibpunct{(}{)}{;}{a}{}{,}
+
+%---------------------------------------------
+%
+%       START
+%
+%---------------------------------------------
+
+\begin{document}
+
+%Running head
+\begin{flushright}
+Version dated: \today
+\end{flushright}
+\bigskip
+\noindent RH: Branch swapping algorithm
+
+\bigskip
+\medskip
+\begin{center}
+
+\noindent{\Large \bf SPR/TBR.} %TG: Need a title!
+\bigskip
+
+\noindent {\normalsize \sc Thomas Guillerme$^1$$^*$, and Martin D. Brazeau$^1$}\\ %TG: Author order can be swapped of course! There's only a finite combination of 2 elements anyway!
+\noindent {\small \it 
+$^1$Imperial College London, Silwood Park Campus, Department of Life Sciences, Buckhurst Road, Ascot SL5 7PY, United Kingdom.\\}
+\end{center}
+\medskip
+\noindent{*\bf Corresponding author.} \textit{t.guillerme@imperial.ac.uk}\\  %TG: Same as above
+\vspace{1in}
+
+%Line numbering
+\modulolinenumbers[1]
+\linenumbers
+
+%---------------------------------------------
+%
+%       ABSTRACT
+%
+%---------------------------------------------
+
+\newpage
+\begin{abstract}
+blablabla
+\end{abstract}
+
+\noindent (Keywords: )\\
+
+\vspace{1.5in}
+
+\newpage 
+
+%---------------------------------------------
+%
+%       INTRODUCTION
+%
+%---------------------------------------------
+
+\section{Introduction}
+Classic literature will visit redundant trees \citep{felsenstein2004inferring}.
+
+That takes time and introduces statistical biases (e.g. for heuristic searches, some topologies can be visited more than others).
+
+Therefore it's important to implement branch swapping algorithms properly.
+
+Here we propose a method that is equivalent mathematically to the previous ones \citep{felsenstein2004inferring} but that uses a different practical approach that can be more intuitive and allows to visit each topology only once.
+
+We look at SPR as rerooting + branching.
+
+\section{TBR and SPR}
+
+Define both here. Probably reuse the figure from Felsenstein modified.
+
+\section{Improved algorithm}
+
+\subsection{Neighbour Rule}
+
+\subsection{SPR as SRB (Subtree Rerooting and Branching)}
+
+\section{Conclusion}
+
+This way is not different than the classic SPR/TBR but it's a better implementation.
+
+\section{Data availability and reproducibility}
+%TG: Probably some link to morphy
+
+
+\section{Acknowledgments}
+European Research Council under the European Union’s Seventh Framework Programme (FP/2007–2013)/ERC Grant Agreement number 311092.
+
+
+\bibliographystyle{sysbio}
+\bibliography{References}
+
+\end{document}
