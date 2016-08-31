@@ -174,7 +174,7 @@ Redundant tree topologies occur when the subtree is rebranched on it's original 
 It is then possible to calculate the precise minimum number of SPR rearrangements to cover all topologies without redundant swaps as:
 
 \begin{equation}
-    \text{Total SPR}={\overbrace{(2n-3)}^{\text{edges}}} \times {\overbrace{(2n-4)}^{(\text{edges} - 1)}} % TG: or use \sum{SPR}?
+    \text{Total SPR}={\overbrace{(2n-3)}^{\text{edges}}} {\overbrace{(2n-4)}^{(\text{edges} - 1)}} % TG: or use \sum{SPR}?
 \end{equation}
 
 Where $(2n-3)$ is the number of subtrees one can obtain from an original $n$ taxa tree and $(2n-4)$ are the number of reinsertions possible from these subtrees on the target trees \cite{allen2001subtree}.
@@ -186,11 +186,19 @@ Thus:
 \end{equation}
 
 \citep[c.f.][]{felsenstein2004inferring}
-
-
-
 \subsubsection{Tree Bisection and Reconnection (TBR)}
-This method 
+This method consists in breaking the original tree into two distinct trees.
+One of them is then rerooted on every of its edges and then rebranched on any of the edges of the second tree.
+For a tree with $n$ taxa separated into two trees with $n_{1}$ taxa and $n_{2}$ taxa, there will be $(2n_{1}-3)(2n_{2}-3)$ possible ways to recombine the them \citep{felsenstein2004inferring} with $n_{1}$ and $n_{2}$ varying from $2$ to $n-2$ depending on the tree topology.
+This operation can be repeated for all the internal edges in the original tree, thus the maximum TBR can be:
+\begin{equation}
+    \text{Maximum TBR} = \overbrace{(n-3)}^{\text{internal edges}} \sum_{i=2}^{n-2} (2i-3)(2(n-i)-3) %TG: Check! Summation might be incorrect
+\end{equation}
+Where $i$ and $n-i$ corresponds respectively to the size of the smallest and biggest trees resulting from splitting the original tree.
+
+The minimum number of TBR rearrangement is depending on the tree topology
+Where both $n_{1}$ and $n_{2}$ can vary from $2$ to $n-2$ depending on the tree topology.
+In fact the minimum
 
 \begin{figure}[!htbp]
 \centering
