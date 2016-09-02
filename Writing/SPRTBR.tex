@@ -118,17 +118,14 @@ blablabla
 
 \section{Introduction}
 
-Tree rearrangement is used in phylogenetic inference or in macroecology and macroevolution (e.g. comparing trees) %TG: Potential selfcite here!
-+ linguistic and philology
--linguistic tree searching, but that's really phylogenetics. Linear model simplification has parallels too.
--similar to search strategies in integer and mixed integer programming - it's all combinatorial optimisation.
-But also used in network analysis?
-Or horizontal genes transfer analysis? \citep{mcfadden1995something}.
+Tree rearrangement is used in tree inference in phylogenetics \citep[e.g.][]{swofford2003paup,Stamatakis21012014,Ronquist2012mrbayes}, in linguistics \citep[e.g.][]{Bouckaert24082012}, epidemiology \citep[e.g.][]{Gire1369}.
+But also for comparing tree topologies \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}
+Or horizontal genes transfer analysis \citep[e.g.][]{mcfadden1995something,bordewich2005computational}
+Linear model simplification has parallels too?
+Similar to search strategies in integer and mixed integer programming?
 If two trees of two different sets of genes for the same species have a different topology, and that the inconsistency can be resolved by a single hybridisation event, there is a single subtree pruning regrafting (SPR) operation that can solve the problem \citep{bordewich2005computational}.
+Classic lite rature will visit redundant trees \citep{allen2001subtree,felsenstein2004inferring}.
 
-
-
-Classic literature will visit redundant trees \citep{felsenstein2004inferring}.
 
 That takes time and introduces statistical biases (e.g. for heuristic searches, some topologies can be visited more than others).
 This can be problematic. For example, for a tree with $n$ taxa, SPR/TBR can produce $M$ topologies including $m$ similar ones.
