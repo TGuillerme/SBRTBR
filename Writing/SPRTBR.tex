@@ -110,6 +110,34 @@ blablabla
 
 \newpage 
 
+
+%---------------------------------------------
+% LaTeX tips for modifying/editing the document:
+%---------------------------------------------
+% - You can comment using the percentage sign. I suggest you use the % sign alone for commenting out sections of the text:
+%       e.g. "This is a really long sentence %because this sentence is very long." Here the % is used for ignoring the end of the sentence (but for some reason you want to keep track of it).%
+%       For comments as in verbose comments, I suggest you use "%MB:":
+%       e.g. "This is a really long sentence %because this sentence is very long. %MB: yeah, no shit!" 
+% - For optimal version control, write only one sentence per line (for more precise track changes)
+% - To build the pdf, use command+B in Sublime.
+% - Because of the bibliography, the pdf needs to be build in the same folder that contains "References.bib" and "sysbio.bst"
+% - For citing papers, you must put their bibtex reference in the "References.bib" file and then you can use the following sysbio tags:
+%        \cite{bibtexBob2000} for citing within a sentence: "Bob (2000)"
+%        \citep{bibtexBob2000} for citing within brackets: "(Bob, 2000)"
+%        \citep[Before:][-After]{bibtexBob2000} for citing within brackets with additional text: "(Before: Bob, 2000 -After)"
+%        \citealt{bibtexBob2000} for citing without brackets: "Bob, 2000"
+%        You can put more cites in each \cite tag by separating them with commas.
+% - For equation, find every details here: https://en.wikibooks.org/wiki/LaTeX/Mathematics
+% - For titles and stuff, the hierarchy goes \section{}, \subsection{}, \subsubsection{} and so forth...
+% - For bullet points or enumerations you can use:
+%       \begin{itemize}
+%           \item my first bullet point/enumeration
+%       \end{itemize}
+%       With replacing "itemize" by "enumerate" for enumeration.
+
+
+
+
 %---------------------------------------------
 %
 %       INTRODUCTION
