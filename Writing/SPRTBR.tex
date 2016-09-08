@@ -152,25 +152,34 @@ Or horizontal genes transfer analysis \citep[e.g.][]{mcfadden1995something,borde
 Linear model simplification has parallels too?
 Similar to search strategies in integer and mixed integer programming?
 If two trees of two different sets of genes for the same species have a different topology, and that the inconsistency can be resolved by a single hybridisation event, there is a single subtree pruning regrafting (SPR) operation that can solve the problem \citep{bordewich2005computational}.
-Classic lite rature will visit redundant trees \citep{allen2001subtree,felsenstein2004inferring}.
+Classic literature will visit redundant trees \citep{allen2001subtree,felsenstein2004inferring}.
 
+Visiting redundant tree topologies (i.e. redundant branch swaps) creates two major problems: (1) it costs time and (2) it can bias the tree search.
+First, although time does not seem an issue for a single branch swap repeated twice (@@@ CPU time), when scaling it to modern phylogenetic inference (i.e. repeated @@@ times), it becomes one of the main bottleneck of phylogenetic software [CITE?].
+Second, repeating the same swap several times involves visiting some topologies more than other.
+In optimisation search algorithm that visit all the possible solution (\textit{Hard} heuristic search) %TG: probably not the correct term here. I mean looking for all solutions
+ this might not pose any problem but because of the sheer amount of branch swaps to visit, this approach is rarely used.
+In fact, when the heuristic search only visits some possible solutions (and then continues optimisation from there if the topology is better) this can create problems by having a higher probability of landing on a specific tree topology island since the probability of obtaining any topology by branch swap will not be equal (some topologies might be more visited by chance).
+More concretely, for a tree with $n$ taxa, branch swapping algorithms can produce $M$ topologies including $m$ similar ones.
+If the tree search algorithm is set to subsample $m$ topologies only, it can be possible to subsample only the $m$ similar topologies thus being literally ineffective at exploring tree space.
 
-That takes time and introduces statistical biases (e.g. for heuristic searches, some topologies can be visited more than others).
-This can be problematic. For example, for a tree with $n$ taxa, SPR/TBR can produce $M$ topologies including $m$ similar ones.
-If the tree search algorithm is set to subsample $m$ topologies only, it has a possibility to subsample the $m$ similar topologies only thus being literally ineffective at exploring tree space.
+Solutions have been proposed by people in forms of different algorithm implementation that avoid redundant topologies to be visited \citep{allen2001subtree}.
+Although highly efficient these algorithm can be described in some cryptic manners.
 
-
-Therefore it's important to implement branch swapping algorithms properly.
-
-Here we propose a method that is equivalent mathematically to the previous ones \citep{felsenstein2004inferring} but that uses a different practical approach that can be more intuitive and allows to visit each topology only once.
-
+Here we will review two common tree swapping algorithms (Subtree Pruning and Regrafting - SBR - and Tree Bisection and Reconnection - TBR) and propose a mathematically equivalent but more practical and intuitive definition of the algorithms.
 We look at SPR as rerooting + branching.
 
-Number of rooted binary trees for $n$ taxa:
-\begin{equation}
-(2n-3)!!=(2n-3)\times(2n-5)\times...\times3=\frac{(2n-2)!}{2^{n-1}(n-1)!}
-\end{equation}
-And $(2n-5)!!$ for unrooted trees.
+\section{Branch swapping}
+
+The number of rooted binary trees possible with $n$ taxa is $(2n-3)!!$ ($(2n-5)!!$ for unrooted trees!) therefore, it becomes computationally impossible to explore all topologies for any serious number of taxa (e.g. for 14 taxa, there are more than a trillion topologies to visit - $7.9\times10^{12}$).
+
+
+
+
+% \begin{equation}
+%     (2n-3)!!=(2n-3)\times(2n-5)\times...\times3=\frac{(2n-2)!}{2^{n-1}(n-1)!}
+% \end{equation}
+
 
 
 \section{SPR and TBR}
