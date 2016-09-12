@@ -166,7 +166,11 @@ If the tree search algorithm is set to subsample $m$ topologies only, it can be 
 Solutions have been proposed by people in forms of different algorithm implementation that avoid redundant topologies to be visited \citep{allen2001subtree}.
 Although highly efficient these algorithm can be described in some cryptic manners.
 
+%Something about writing code for humans not computers? (i.e. non-cryptic/obfuscating coding practices)
+
 Here we will review two common tree swapping algorithms (Subtree Pruning and Regrafting - SBR - and Tree Bisection and Reconnection - TBR) and propose a mathematically equivalent but more practical and intuitive definition of the algorithms.
+The improvement presented in this paper is aimed to make branch swapping algorithms implementation more intuitive.
+We do not claim priority or originality on this method that is certainly already implemented in many softwares and was ``discovered'' empirically by many coders.
 We look at SPR as rerooting + branching.
 
 \section{Branch swapping}
@@ -218,6 +222,7 @@ Thus:
 \end{equation}
 
 \citep[c.f.][]{felsenstein2004inferring}
+
 \subsubsection{Tree Bisection and Reconnection (TBR)}
 This method consists in breaking the original tree into two distinct trees.
 One of them is then rerooted on every of its edges and then rebranched on any of the edges of the second tree.
@@ -248,6 +253,8 @@ Tree windows and sectorial search
 Coalescent with Recombination
 
 \section{Improved algorithm}
+
+%Check how it's done in different softwares: RAxML, phangorn?
 
 \subsection{Neighbour Rule}
 Neighbour Rule described \citep[in other words;][]{allen2001subtree}.
