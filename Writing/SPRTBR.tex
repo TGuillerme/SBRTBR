@@ -144,26 +144,27 @@ blablabla
 %
 %---------------------------------------------
 
+
+% 1 - Branch swapping is really important
+% 2 - It can be hard to implement if following classic litterature
+% 3 - Here's a new spin on it for making its implementation easier.
+
+
 \section{Introduction}
 
+% Tree rearrangement is paramount
 Phylogenetics, as the way to infer the relations between organisms, is at the base of literally every endeavour in modern biology ans has also important ramifications outside of biological sciences \citep[e.g. linguistics;][]{Bouckaert24082012}.
 Although many of the methods in phylogenetics, ranging from gene alignments \citep[e.g.][]{Tan01092015} to tree comparisons \citep[e.g.][]{kuhner2015treComparison} are widely studied, used and taught \citep{desalle2012phylogenomics}, one crucial aspect, tree rearrangement methods, is often ignored or over-looked by most biologists.
 In fact, these methods are used during crucial steps of the phylogenetic inference procedure (i.e. ``building''the trees) since they allow to efficiently explore the tree space \citep[see ]{Sanderson448} in search for the best topology, whether based on optimality criteria \citep[e.g. maximum parsimony; ][]{swofford2003paup} or probabilistic methods \citep[e.g. likelihood or Bayesian; ][]{Stamatakis21012014,Ronquist2012mrbayes}.
 Moreover, tree rearrangement methods are also widely used in post tree inference tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g][]{goloboff2014bias} or specific analysis such as horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational} to cite only a few.
-%TG:Linear model simplification has parallels too? Similar to search strategies in integer and mixed integer programming?
 
-Branch swapping is used for visiting the tree space.
--Explain tree space/islands- Islands can be explained in terms of NNIs or SPR/TBR distances. \citep{page1993islands,morrison2007increasing}
-Because of the huge amount of topologies that can be obtained with any tree for $n$ number of taxa ($(2n-3)!!$ rooted trees and ($(2n-5)!!$ unrooted ones).
+% Because of the shit ton of trees
+In phylogenetic inference, tree rearrangement methods (or branch swapping) is used to explore tree space \citep[i.e. the realm of all the possible trees][]{page1993islands,morrison2007increasing,Sanderson448}  in order to find the most parsimonious or most likely topology regarding the data provided.
+The need of exploring the tree space is because of the astonishingly high amount of topologies that can be obtained with any tree with $n$ number of taxa ($(2n-3)!!$ rooted trees and ($(2n-5)!!$ unrooted ones).
 It thus becomes quickly impossible to explore all topologies for any serious number of taxa (e.g. for 14 taxa, there are more than a trillion topologies to visit - $7.9\times10^{12}$).
 Branch swapping is used for quickly and efficiently explore the tree space by modifying local regions of the tree to create new topologies.
-Several methods have been proposed ranging from NNI to TBR.
-Here we will focus on the most common ones: SBR and TBR.
 
-% \begin{equation}
-%     (2n-3)!!=(2n-3)\times(2n-5)\times...\times3=\frac{(2n-2)!}{2^{n-1}(n-1)!}
-% \end{equation}
-
+% Also these algorithms can have some caveats
 One main challenge with branch swapping is that it needs to be fast (i.e. many topologies to visit) and statistically reliable (i.e. no bias in which topologies are visited).
 This problem can be reduced to algorithms that visit each topologies only once (avoiding redudant trees). \citep{goloboff2014bias}
 First, although time does not seem an issue for a single branch swap repeated twice (@@@ CPU time), when scaling it to modern phylogenetic inference (i.e. repeated @@@ times), it becomes one of the main bottleneck of phylogenetic software [CITE?].
@@ -174,32 +175,37 @@ In fact, when the heuristic search only visits some possible solutions (and then
 More concretely, for a tree with $n$ taxa, branch swapping algorithms can produce $M$ topologies including $m$ similar ones.
 If the tree search algorithm is set to subsample $m$ topologies only, it can be possible to subsample only the $m$ similar topologies thus being literally ineffective at exploring tree space.
 
+% We therefore need some good algorithms.
 Solutions have been proposed by people in forms of different algorithm implementation that avoid redundant topologies to be visited \citep{allen2001subtree}.
 Although highly efficient these algorithm can be described in some cryptic manners.
 Problem being explained in Fig2 \cite{goloboff2014bias}
 Unique swaps also can introduce some bias when the positions are not considered randomly (which is most often not the case - using pre/post-order traversals) \citep{goloboff2014bias}.
 Avoiding redudant swaps described in \cite{allen2001subtree} or in \cite{goloboff2014bias}.
+%
+Neighbour joining starting tree + NNI and SPR search are roughly as effective but faster than a Stepwise Addition starting tree + TBR \citep{morrison2007increasing}. This is because TBR resamples?
+SPR and TBR often considered separately \citep[e.g.][]{lakner2008efficiency}.
+Randomly executed SPR > Extending TBR > Extending SPR (though random TBR was not tested) in terms of ``boldness'' of branch swapping in MrBayes \citep{lakner2008efficiency}
+Extending algorithm is a biased random algorithm where local rearrangements are more likely than distant ones.
 
+%We therefore propose some vision of how to implement them
 Here we will review two common tree swapping algorithms (Subtree Pruning and Regrafting - SBR - and Tree Bisection and Reconnection - TBR) and propose a mathematically equivalent but more practical and intuitive definition of the algorithms.
 The improvement presented in this paper is aimed to make branch swapping algorithms implementation more intuitive.
 We do not claim priority or originality on this method that is certainly already implemented in many softwares and was ``discovered'' empirically by many coders.
 We look at SPR as rerooting + branching.
 %TG: + Something about writing code for humans not computers? (i.e. non-cryptic/obfuscating coding practices)
 
-Tree swapping in Bayesian \citep{lakner2008efficiency}
+\section{SPR and TBR described in literature}
 
-\section{SPR and TBR Branch swapping}
+% \subsection{Tree elements definition}
+% \begin{itemize}
+%     \item a \textbf{tip} is any leaf of the tree (degree 1 vertices) that is connected to only one node.
+%     \item a \textbf{node} is formed by the connection of tips or nodes. In a binary tree, a node has exactly one ancestor (or parent) and two descendants.
+%     \item an \textbf{edge} is any single connection between two nodes or a node and a tip.
+%     \item the \textbf{root} is the single edge that is only connected to one node (and nothing).
+% \end{itemize}
+% Any bifurcating (i.e. fully resolved) tree with $n$ tips has $2n-1$ nodes and $2n-2$ edges ($n-2$ internal ones) if rooted and $2n-2$ nodes and $2n-3$ edges ($n-3$ internal ones) if unrooted.
 
-\subsection{Tree elements definition}
-\begin{itemize}
-    \item a \textbf{tip} is any leaf of the tree (degree 1 vertices) that is connected to only one node.
-    \item a \textbf{node} is formed by the connection of tips or nodes. In a binary tree, a node has exactly one ancestor (or parent) and two descendants.
-    \item an \textbf{edge} is any single connection between two nodes or a node and a tip.
-    \item the \textbf{root} is the single edge that is only connected to one node (and nothing).
-\end{itemize}
-Any bifurcating (i.e. fully resolved) tree with $n$ tips has $2n-1$ nodes and $2n-2$ edges ($n-2$ internal ones) if rooted and $2n-2$ nodes and $2n-3$ edges ($n-3$ internal ones) if unrooted.
-
-Definitions: \cite{allen2001subtree,felsenstein2004inferring}
+% Definitions: \cite{allen2001subtree,felsenstein2004inferring}
 
 \subsubsection{Subtree Pruning and Regrafting (SPR)}
 This method consists in removing any subtree from the original tree (including all trees with only one tip and one edge, i.e. the terminal nodes) and reinserting it along every edges back on the original tree \citep[see Fig \ref{Figure_Felsenstein};]{felsenstein2004inferring}.
@@ -246,22 +252,16 @@ In fact the minimum
 \label{Figure_Felsenstein}
 \end{figure}
 
-\section{Generalised TBR}
 
-Neighbour joining starting tree + NNI and SPR search are roughly as effective but faster than a Stepwise Addition starting tree + TBR \citep{morrison2007increasing}. This is because TBR resamples?
-
-SPR and TBR often considered separately \citep[e.g.][]{lakner2008efficiency}.
-Randomly executed SPR > Extending TBR > Extending SPR (though random TBR was not tested) in terms of ``boldness'' of branch swapping in MrBayes \citep{lakner2008efficiency}
-Extending algorithm is a biased random algorithm where local rearrangements are more likely than distant ones.
-
+\section{Implementation spin}
 %Check how it's done in different softwares: RAxML, phangorn?
 
-\subsection{Neighbour Rule}
-Neighbour Rule described \citep[in other words;][]{allen2001subtree}.
+% \subsection{Neighbour Rule}
+% Neighbour Rule described \citep[in other words;][]{allen2001subtree}.
 
-\subsection{SPR as TRB (Subtree Rerooting and Branching)}
+% \subsection{SPR as TRB (Subtree Rerooting and Branching)}
 
-\section{Conclusion}
+% \section{Conclusion}
 
 This way is not different than the classic SPR/TBR but it's a better implementation.
 
