@@ -78,7 +78,7 @@ Version dated: \today
 \medskip
 \begin{center}
 
-\noindent{\Large \bf SPR/TBR.} %TG: Need a title!
+\noindent{\Large \bf SPR/TBR.} %TG: Need a title! - Something punny like "Rearanging tree rearagment techniques." (I'm bad at puns).
 \bigskip
 
 \noindent {\normalsize \sc Thomas Guillerme$^1$$^*$, and Martin D. Brazeau$^1$}\\ %TG: Author order can be swapped of course! There's only a finite combination of 2 elements anyway!
@@ -153,7 +153,7 @@ Moreover, tree rearrangement methods are also widely used in post tree inference
 %TG:Linear model simplification has parallels too? Similar to search strategies in integer and mixed integer programming?
 
 Branch swapping is used for visiting the tree space.
--Explain tree space/islands-
+-Explain tree space/islands- Islands can be explained in terms of NNIs or SPR/TBR distances. \citep{page1993islands,morrison2007increasing}
 Because of the huge amount of topologies that can be obtained with any tree for $n$ number of taxa ($(2n-3)!!$ rooted trees and ($(2n-5)!!$ unrooted ones).
 It thus becomes quickly impossible to explore all topologies for any serious number of taxa (e.g. for 14 taxa, there are more than a trillion topologies to visit - $7.9\times10^{12}$).
 Branch swapping is used for quickly and efficiently explore the tree space by modifying local regions of the tree to create new topologies.
@@ -185,6 +185,8 @@ The improvement presented in this paper is aimed to make branch swapping algorit
 We do not claim priority or originality on this method that is certainly already implemented in many softwares and was ``discovered'' empirically by many coders.
 We look at SPR as rerooting + branching.
 %TG: + Something about writing code for humans not computers? (i.e. non-cryptic/obfuscating coding practices)
+
+Tree swapping in Bayesian \citep{lakner2008efficiency}
 
 \section{SPR and TBR Branch swapping}
 
@@ -244,8 +246,13 @@ In fact the minimum
 \label{Figure_Felsenstein}
 \end{figure}
 
-
 \section{Generalised TBR}
+
+Neighbour joining starting tree + NNI and SPR search are roughly as effective but faster than a Stepwise Addition starting tree + TBR \citep{morrison2007increasing}. This is because TBR resamples?
+
+SPR and TBR often considered separately \citep[e.g.][]{lakner2008efficiency}.
+Randomly executed SPR > Extending TBR > Extending SPR (though random TBR was not tested) in terms of ``boldness'' of branch swapping in MrBayes \citep{lakner2008efficiency}
+Extending algorithm is a biased random algorithm where local rearrangements are more likely than distant ones.
 
 %Check how it's done in different softwares: RAxML, phangorn?
 
@@ -257,6 +264,10 @@ Neighbour Rule described \citep[in other words;][]{allen2001subtree}.
 \section{Conclusion}
 
 This way is not different than the classic SPR/TBR but it's a better implementation.
+
+Ideally we want a tree rearrangement method that samples the tree space evenly or, at worse, randomly.
+\cite{lakner2008efficiency} proposes shifts in branch swapping algorithms during the tree search phase: first allowing bold branch swapping algorithms to explore the overall tree space and then using more conservative ones to do a ``fine grain'' search in local optima.
+
 
 \section{Data availability and reproducibility}
 %TG: Probably some link to morphy
