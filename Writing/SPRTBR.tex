@@ -143,56 +143,47 @@ blablabla
 %       INTRODUCTION
 %
 %---------------------------------------------
-
-
-% 1 - Branch swapping is really important
-% 2 - It can be hard to implement if following classic litterature
-% 3 - Here's a new spin on it for making its implementation easier.
-
-
 \section{Introduction}
 
 % Tree rearrangement is paramount
 Phylogenetics, as the way to infer the relations between organisms, is at the base of literally every endeavour in modern biology ans has also important ramifications outside of biological sciences \citep[e.g. linguistics;][]{Bouckaert24082012}.
-Although many of the methods in phylogenetics, ranging from gene alignments \citep[e.g.][]{Tan01092015} to tree comparisons \citep[e.g.][]{kuhner2015treComparison} are widely studied, used and taught \citep{desalle2012phylogenomics}, one crucial aspect, tree rearrangement methods, is often ignored or over-looked by most biologists.
-In fact, these methods are used during crucial steps of the phylogenetic inference procedure (i.e. ``building''the trees) since they allow to efficiently explore the tree space \citep[see ]{Sanderson448} in search for the best topology, whether based on optimality criteria \citep[e.g. maximum parsimony; ][]{swofford2003paup} or probabilistic methods \citep[e.g. likelihood or Bayesian; ][]{Stamatakis21012014,Ronquist2012mrbayes}.
-Moreover, tree rearrangement methods are also widely used in post tree inference tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g][]{goloboff2014bias} or specific analysis such as horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational} to cite only a few.
+Although many of the methods related phylogenetics, ranging from gene alignments \citep[e.g.][]{Tan01092015} to tree comparisons \citep[e.g.][]{kuhner2015treComparison} are widely studied, used and taught \citep{desalle2012phylogenomics}, one crucial aspect, tree rearrangement methods, is often ignored or over-looked by most biologists.
+In fact, these methods are used during crucial steps of the phylogenetic inference procedure (i.e. ``building'' the trees) since they allow to efficiently explore the tree space \citep[see ][]{Sanderson448} in search for the best topology, whether based on optimality criteria \citep[e.g. maximum parsimony; ][]{swofford2003paup} or probabilistic methods \citep[e.g. likelihood or Bayesian; ][]{Stamatakis21012014,Ronquist2012mrbayes}.
+Moreover, tree rearrangement methods are also at the base of some post tree inference tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g][]{goloboff2014bias} or specific analysis such as horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational} to cite only a few.
 
 % Because of the shit ton of trees
-In phylogenetic inference, tree rearrangement methods (or branch swapping) is used to explore tree space \citep[i.e. the realm of all the possible trees][]{page1993islands,morrison2007increasing,Sanderson448}  in order to find the most parsimonious or most likely topology regarding the data provided.
-The need of exploring the tree space is because of the astonishingly high amount of topologies that can be obtained with any tree with $n$ number of taxa ($(2n-3)!!$ rooted trees and ($(2n-5)!!$ unrooted ones).
-It thus becomes quickly impossible to explore all topologies for any serious number of taxa (e.g. for 14 taxa, there are more than a trillion topologies to visit - $7.9\times10^{12}$).
-Branch swapping is used for quickly and efficiently explore the tree space by modifying local regions of the tree to create new topologies.
+In phylogenetic inference, tree rearrangement methods (or branch swapping) is used to explore tree space \citep[i.e. the realm of all the possible trees][]{page1993islands,morrison2007increasing,Sanderson448}.
+This tree space can be astonishingly big.
+For example, considering the topology parameter only, the number of topologies that can be obtained with any tree with $n$ number of taxa is $(2n-3)!!$ for rooted trees and $(2n-5)!!$ for unrooted ones.
+To put it in perspectives, for only 14 taxa, the tree space contains more than a trillion topologies ($7.9\times10^{12}$)!
+Thus, one of the major challenge for tree rearrangement is to find a fast algorithm that is statistically to only visit a subset of these topologies and still be able to find the optimal topology. 
+The speed of the tree rearrangement can be solved by efficient algorithmic implementation (e.g. algorithms that require a low amount of memory by using ring-based tree structures)[CITE].
+Conversely, the reliability aspect must be based on strict rules in the algorithm avoiding unwanted tree rearrangements \citep{allen2001subtree,felsenstein2004inferring,lakner2008efficiency,goloboff1993character}.
 
 % Also these algorithms can have some caveats
-One main challenge with branch swapping is that it needs to be fast (i.e. many topologies to visit) and statistically reliable (i.e. no bias in which topologies are visited).
-This problem can be reduced to algorithms that visit each topologies only once (avoiding redudant trees). \citep{goloboff2014bias}
-First, although time does not seem an issue for a single branch swap repeated twice (@@@ CPU time), when scaling it to modern phylogenetic inference (i.e. repeated @@@ times), it becomes one of the main bottleneck of phylogenetic software [CITE?].
-Second, repeating the same swap several times involves visiting some topologies more than other.
-In optimisation search algorithm that visit all the possible solution (\textit{Hard} heuristic search) %TG: probably not the correct term here. I mean looking for all solutions
- this might not pose any problem but because of the sheer amount of branch swaps to visit, this approach is rarely used.
-In fact, when the heuristic search only visits some possible solutions (and then continues optimisation from there if the topology is better) this can create problems by having a higher probability of landing on a specific tree topology island since the probability of obtaining any topology by branch swap will not be equal (some topologies might be more visited by chance).
-More concretely, for a tree with $n$ taxa, branch swapping algorithms can produce $M$ topologies including $m$ similar ones.
-If the tree search algorithm is set to subsample $m$ topologies only, it can be possible to subsample only the $m$ similar topologies thus being literally ineffective at exploring tree space.
+Two main points need to be considered for the reliability of tree arrangement algorithms:
+\begin{enumerate}
+    \item First, when the tree search only visits some possible solutions this can create problems by having a higher probability of visiting a specific tree topology island since the probability of obtaining any topology by tree rearrangement will not be equal (some topologies might be more visited by chance).
+    More concretely, for a tree with $n$ taxa, tree rearrangement algorithms can produce $M$ topologies including $m$ similar ones.
+    If the tree search algorithm is set to subsample $m$ topologies only, it can possibly only subsample the $m$ similar topologies thus being literally ineffective at exploring tree space \citep{allen2001subtree}.
+    \item Second, the order in which the possible tree rearrangement topologies are visited is also paramount.
+    In fact, to avoid any statistical bias, the visiting order should be strictly random \citep{goloboff2014bias} although, in practice, and for algorithm speed reasons, this is rarely the case (e.g. using post/pre-order traversals [CITE]).
+    This as been shown to introduce several biases in theoretical examples \citep{goloboff2014bias} although, to our knowledge, has not been demonstrated empirically.
+\end{enumerate}
 
 % We therefore need some good algorithms.
-Solutions have been proposed by people in forms of different algorithm implementation that avoid redundant topologies to be visited \citep{allen2001subtree}.
-Although highly efficient these algorithm can be described in some cryptic manners.
-Problem being explained in Fig2 \cite{goloboff2014bias}
-Unique swaps also can introduce some bias when the positions are not considered randomly (which is most often not the case - using pre/post-order traversals) \citep{goloboff2014bias}.
-Avoiding redudant swaps described in \cite{allen2001subtree} or in \cite{goloboff2014bias}.
-%
-Neighbour joining starting tree + NNI and SPR search are roughly as effective but faster than a Stepwise Addition starting tree + TBR \citep{morrison2007increasing}. This is because TBR resamples?
-SPR and TBR often considered separately \citep[e.g.][]{lakner2008efficiency}.
-Randomly executed SPR > Extending TBR > Extending SPR (though random TBR was not tested) in terms of ``boldness'' of branch swapping in MrBayes \citep{lakner2008efficiency}
-Extending algorithm is a biased random algorithm where local rearrangements are more likely than distant ones.
+Solutions have been proposed by people in forms of different algorithm implementation that avoid redundant topologies to be visited \citep{allen2001subtree} and that these topologies are visited randomly \citep{goloboff2014bias}.
+Two of the most popular algorithms are the Subtree Pruning and Regrafting method (SPR) and the Tree Bisection and Reconnection method \citep[TBR - see Fig. \ref{Figure_Felsenstein} and text below for detailled description;][]{allen2001subtree,felsenstein2004inferring}.
+These two algorithms are often considered separately since they produce different series of tree rearrangements: SPR produces more closely related trees than TBR.
+However, in practice, the efficiency of those algorithms for finding the best topology varies in function of the method, the data and their combination with other tree rearrangement algorithms \citep[e.g.][]{morrison2007increasing,lakner2008efficiency}.
+Also the way the trees are visited (see point 2 above) modifies the efficiency of these algorithms.
+For example, \cite{lakner2008efficiency} found, for Bayesian inference, that SPR (when sampled randomly) was more efficient than TBR (when sampled not-randomly) which was in turn more efficient than SPR (when sampled not-randomly).
 
-%We therefore propose some vision of how to implement them
-Here we will review two common tree swapping algorithms (Subtree Pruning and Regrafting - SBR - and Tree Bisection and Reconnection - TBR) and propose a mathematically equivalent but more practical and intuitive definition of the algorithms.
-The improvement presented in this paper is aimed to make branch swapping algorithms implementation more intuitive.
-We do not claim priority or originality on this method that is certainly already implemented in many softwares and was ``discovered'' empirically by many coders.
-We look at SPR as rerooting + branching.
-%TG: + Something about writing code for humans not computers? (i.e. non-cryptic/obfuscating coding practices)
+The tree inference literature contains thorough and precise descriptions of both the algorithms \citep[e.g.][]{allen2001subtree,felsenstein2004inferring} and their caveats \citep[ie.e seepd and reliability - e.g.][]{morrison2007increasing,lakner2008efficiency,goloboff2014bias}.
+However, the \textit{implementation} of the algorithms is often overlooked.
+Here, we will review two common branch rearrangement algorithms (SPR and TBR) and propose a more practical and intuitive definition of the algorithms that we believe can help their implementation.
+It is important to note that the algorithms described here are mathematically equivalent to the ones described in \cite{allen2001subtree} and \cite{felsenstein2004inferring} and we thus do not claim priority r originality on this method that as certainly already be implemented in many softwares and was ``discovered'' empirically by many coders.
+%TG: add something about writing code for humans not computers? (i.e. non-cryptic/obfuscating coding practices)
 
 \section{SPR and TBR described in literature}
 
