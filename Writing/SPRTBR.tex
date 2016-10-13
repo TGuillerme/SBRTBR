@@ -242,6 +242,20 @@ For a tree with $n$ taxa separated into two trees with $n_{1}$ taxa and $n_{2}$ 
 
 
 \section{Implementation spin}
+These two algorithms can be see as technically different since they will produce different tree islands, for example, the SPR will, in theory explore less topologies than the TBR \citep[see above and][]{morrison2007increasing,lakner2008efficiency}.
+However, regarding the once one excludes the visiting of redundant topologies in both algorithms, they can be see as a generalised way to explore effectively all possible tree topologies.
+First, as described in \cite{allen2001subtree} (but not in \citealt{felsenstein2004inferring}), a simple rule can be applied to avoid redundant topologies in both SPR and TBR algorithm: in both cases the the rebranching/reconnection should never occur on the origin edge (obviously) but neither on the neighbouring ones.
+Second, SPR can be seen as a TBR where the rerooting is only done on the edge the closest to the bisection point.
+We believe that considering SPR as a constrained TBR greatly facilitates its algorithmic implementation.
+see Fig \ref{Figure_TBR_modif}.
+
+\begin{figure}[!htbp]
+\centering
+   \includegraphics[width=0.9\textwidth]{Figure/TBR_modif.pdf}
+\caption{Generalised TBR. \textbf{1}: the trees are split at a random edge and both subtrees are unrooted; \textbf{2a}: the red tree is then rooted on the edge closest to the bisection edge and reconnected to an edge on the black tree (i.e. a SPR move); \textbf{2b}: the red tree is rooted on any of its edges and reconnected to an edge on the black tree (i.e. a TBR move). Note that in both cases, the red tree can not be reconnected on the edge of origin (indicated by the red arrow) nor on any of the adjacent edges (marked with a red cross) to avoid any redundant tree rearrangements.}
+\label{Figure_TBR_modif}
+\end{figure}
+
 %Check how it's done in different softwares: RAxML, phangorn?
 
 % \subsection{Neighbour Rule}
@@ -257,8 +271,8 @@ Ideally we want a tree rearrangement method that samples the tree space evenly o
 \cite{lakner2008efficiency} proposes shifts in branch swapping algorithms during the tree search phase: first allowing bold branch swapping algorithms to explore the overall tree space and then using more conservative ones to do a ``fine grain'' search in local optima.
 
 
-\section{Data availability and reproducibility}
-%TG: Probably some link to morphy
+% \section{Data availability and reproducibility}
+% %TG: Probably some link to morphy
 
 
 \section{Acknowledgments}
