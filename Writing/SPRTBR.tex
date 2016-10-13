@@ -173,7 +173,7 @@ Two main points need to be considered for the reliability of tree arrangement al
 
 % We therefore need some good algorithms.
 Solutions have been proposed by people in forms of different algorithm implementation that avoid redundant topologies to be visited \citep{allen2001subtree} and that these topologies are visited randomly \citep{goloboff2014bias}.
-Two of the most popular algorithms are the Subtree Pruning and Regrafting method (SPR) and the Tree Bisection and Reconnection method \citep[TBR - see Fig. \ref{Figure_Felsenstein} and text below for detailled description;][]{allen2001subtree,felsenstein2004inferring}.
+Two of the most popular algorithms are the Subtree Pruning and Regrafting method (SPR) and the Tree Bisection and Reconnection method \citep[TBR - see Fig. \ref{Figure_SPR} and \ref{Figure_TBR} and text below for detailled description;][]{allen2001subtree,felsenstein2004inferring}.
 These two algorithms are often considered separately since they produce different series of tree rearrangements: SPR produces more closely related trees than TBR.
 However, in practice, the efficiency of those algorithms for finding the best topology varies in function of the method, the data and their combination with other tree rearrangement algorithms \citep[e.g.][]{morrison2007increasing,lakner2008efficiency}.
 Also the way the trees are visited (see point 2 above) modifies the efficiency of these algorithms.
@@ -199,7 +199,7 @@ It is important to note that the algorithms described here are mathematically eq
 % Definitions: \cite{allen2001subtree,felsenstein2004inferring}
 
 \subsubsection{Subtree Pruning and Regrafting (SPR)}
-This method consists in removing any subtree from the original tree (including all trees with only one tip and one edge, i.e. the individual tips) and reinserting it along every edges back on the original tree \citep[see Fig \ref{Figure_Felsenstein};][]{felsenstein2004inferring}.
+This method consists in removing any subtree from the original tree (including all trees with only one tip and one edge, i.e. the individual tips) and reinserting it along every edges back on the original tree \citep[see Fig \ref{Figure_SPR};][]{felsenstein2004inferring}.
 In other words, a tree with $n$ taxa, is split into two trees: the target tree with $n_{target}$ taxa and the subtree with $n_{subtree}$ taxa (where $n_{subtree} \geq 1$).
 The substree is then reinserted in the $2n_{target}-3$ positions available on the target tree \citep{felsenstein2004inferring}.
 Thus, the total number of SPR rearrangements for an original tree with $n$ taxa is $4(n-3)(n-2)$.
@@ -214,6 +214,14 @@ Redundant tree topologies occur when the subtree is regrafted (or rebranched) on
 From this total, we can remove the $6(n-2)$ resulting trees corresponding to regrafting the subtrees on the edge where the subtree was pruned from \citep[i.e. the rearrangements resulting in the same topology; ][]{allen2001subtree}, and the $8(n-3)$ resulting trees corresponding to regrafting the subtrees on the edge adjacent to the pruned edge \citep{allen2001subtree}.
 Thus the number of unique topologies obtained by SPR is $4(n-3)(n-4)$.
 
+\begin{figure}[!htbp]
+\centering
+   \includegraphics[width=0.9\textwidth]{Figure/SPR.pdf}
+\caption{Suptree Pruning and Regrafting (SPR). Modified from \cite{felsenstein2004inferring}, Figure 4.5. \textbf{1}: a random subtree with $n$ tips is selected; \textbf{2}: the red arrow designates the edge where the subtree was previously branched and the black one the new insertion point. Note that all the edges but the one with the red arrow are potential insertion points. \textbf{3}: the new topology obtained by one SPR rearrangement.}
+\label{Figure_SPR}
+\end{figure}
+
+
 \subsubsection{Tree Bisection and Reconnection (TBR)}
 This method consists in breaking the original tree into two distinct subtrees (the bisection).
 The first subtree is then sequentially rerooted on each of its edges and then rebranched on every edges of the second subtree (the reconnection).
@@ -227,9 +235,9 @@ For a tree with $n$ taxa separated into two trees with $n_{1}$ taxa and $n_{2}$ 
 
 \begin{figure}[!htbp]
 \centering
-   \includegraphics[width=0.8\textwidth]{Figure/FelsensteinFigure.pdf}
-\caption{\scriptsize{SPR and TBR description. Modified from \cite{felsenstein2004inferring}, Figure 4.5 and 4.6. \textbf{SPR-1:} blabla; \textbf{SPR-2:} blabla; \textbf{SPR-3:}blabla; \textbf{TBR-1:} blabla; \textbf{TBR-2:} blabla (note that when the sub-tree is reroot on position \textit{1}, the rearrangement is equivalent to a SPR); \textbf{TBR-3:}blabla.}}
-\label{Figure_Felsenstein}
+   \includegraphics[width=0.9\textwidth]{Figure/TBR.pdf}
+\caption{Tree Bisection and Reconnection (TBR). Modified from \cite{felsenstein2004inferring}, Figure 4.6. \textbf{1}: the trees are split at a random edge and both subtrees are unrooted; \textbf{2}: the red arrow designates the edge where the red tree was previously connected and the black one designates the new rooting point on the red tree and its insertion on the black tree. Note that all the edges on the black tree (but the one with the red arrow) are potential reconnection points. \textbf{3}: the new topology obtained by one TBR rearrangement.}
+\label{Figure_TBR}
 \end{figure}
 
 
