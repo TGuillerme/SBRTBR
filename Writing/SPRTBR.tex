@@ -152,8 +152,8 @@ In fact, these methods are used during crucial steps of the phylogenetic inferen
 Moreover, tree rearrangement methods are also at the base of some post tree inference tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or specific analysis such as horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational} to cite only a few.
 
 % Because of the shit ton of trees
-In phylogenetic inference, tree rearrangement methods (or branch swapping) is used to explore tree space \citep[i.e. the realm of all the possible trees][]{page1993islands,morrison2007increasing,Sanderson448}.
-In practice, this tree space can easily be astonishingly big.
+In phylogenetic inference, tree rearrangement methods (or branch swapping) is used to explore tree space \citep[i.e. the realm of all the possible trees;][]{page1993islands,morrison2007increasing,Sanderson448}.
+In practice, this tree space can be sufficiently big so as to make its exhaustive exploration impossible.
 For example, considering the topology parameter only, the number of topologies that can be obtained with any tree with $n$ number of taxa is $(2n-3)!!$ for rooted trees and $(2n-5)!!$ for unrooted ones.
 To put it in perspectives, for only 14 taxa, the tree space contains more than a trillion topologies ($7.9\times10^{12}$)!
 Thus, one of the major challenge in tree rearrangement methods is to find a fast and reliable algorithm that only visits a subset of these topologies to find the optimal topology. 
@@ -224,7 +224,7 @@ Thus the number of unique topologies obtained by SPR is $4(n-3)(n-4)$.
 \subsubsection{Tree Bisection and Reconnection (TBR)}
 This method consists in breaking the original tree into two distinct subtrees (the bisection).
 The first subtree is then sequentially rerooted on each of its edges and then rebranched on every edges of the second subtree (the reconnection).
-For a tree with $n$ taxa separated into two trees with $n_{1}$ taxa and $n_{2}$ taxa, there will be $(2n_{1}-3)(2n_{2}-3)$ possible ways to recombine the them \citep{felsenstein2004inferring} with $n_{1}$ and $n_{2}$ ranging from $2$ to $n-2$ depending on the tree's topology.
+For a tree with $n$ taxa separated into two trees with $n_{1}$ taxa and $n_{2}$ taxa, there will be $(2n_{1}-3)(2n_{2}-3)$ possible ways to recombine them \citep{felsenstein2004inferring} with $n_{1}$ and $n_{2}$ ranging from $2$ to $n-2$ depending on the tree's topology.
 
 % This operation can be repeated for all the internal edges in the original tree, thus the maximum TBR can be:
 % \begin{equation}
@@ -242,7 +242,7 @@ For a tree with $n$ taxa separated into two trees with $n_{1}$ taxa and $n_{2}$ 
 \section{Implementation spin}
 These two algorithms can be seen as technically different since they will produce different tree islands, for example, the SPR will, in theory explore less topologies than the TBR \citep[see above and][]{morrison2007increasing,lakner2008efficiency}.
 However, once one excludes the visiting of redundant topologies in both algorithms, they can be seen as a generalised way to explore effectively all possible tree topologies.
-First, as described in \cite{allen2001subtree} (but not in \citealt{felsenstein2004inferring}), a simple rule can be applied to avoid redundant topologies in both SPR and TBR algorithm: in both cases the the rebranching/reconnection should never occur on the edge of origin (the red arrow in Figs \ref{Figure_SPR}, \ref{Figure_TBR} and \ref{Figure_TBR_modif}) but neither on the neighbouring ones \citep{allen2001subtree}.
+First, as described in \cite{allen2001subtree} (but not in \citealt{felsenstein2004inferring}), a simple rule can be applied to avoid redundant topologies in both SPR and TBR algorithm: in both cases the rebranching/reconnection should never occur on the edge of origin (the red arrow in Figs \ref{Figure_SPR}, \ref{Figure_TBR} and \ref{Figure_TBR_modif}) but neither on the neighbouring ones \citep{allen2001subtree}.
 Second and foremost, an SPR algorithm can be implemented as a TBR one where the rerooting is only done on the edge the closest to the bisection point (see Fig \ref{Figure_TBR_modif}).
 
 \begin{figure}[!htbp]
