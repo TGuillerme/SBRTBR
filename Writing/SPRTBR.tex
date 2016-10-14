@@ -78,7 +78,7 @@ Version dated: \today
 \medskip
 \begin{center}
 
-\noindent{\Large \bf SPR/TBR.} %TG: Need a title! - Something punny like "Rearanging tree rearagment techniques." (I'm bad at puns).
+\noindent{\Large \bf Tree rearrangements rearranged} %TG: I'm bad at puns.
 \bigskip
 
 \noindent {\normalsize \sc Thomas Guillerme$^1$$^*$, and Martin D. Brazeau$^1$}\\ %TG: Author order can be swapped of course! There's only a finite combination of 2 elements anyway!
@@ -149,15 +149,15 @@ blablabla
 Phylogenetics, as the way to infer the relations between organisms, is at the base of literally every endeavour in modern biology ans has also important ramifications outside of biological sciences \citep[e.g. linguistics;][]{Bouckaert24082012}.
 Although many of the methods related phylogenetics, ranging from gene alignments \citep[e.g.][]{Tan01092015} to tree comparisons \citep[e.g.][]{kuhner2015treComparison} are widely studied, used and taught \citep{desalle2012phylogenomics}, one crucial aspect, tree rearrangement methods, is often ignored or over-looked by most biologists.
 In fact, these methods are used during crucial steps of the phylogenetic inference procedure (i.e. ``building'' the trees) since they allow to efficiently explore the tree space \citep[see ][]{Sanderson448} in search for the best topology, whether based on optimality criteria \citep[e.g. maximum parsimony; ][]{swofford2003paup} or probabilistic methods \citep[e.g. likelihood or Bayesian; ][]{Stamatakis21012014,Ronquist2012mrbayes}.
-Moreover, tree rearrangement methods are also at the base of some post tree inference tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g][]{goloboff2014bias} or specific analysis such as horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational} to cite only a few.
+Moreover, tree rearrangement methods are also at the base of some post tree inference tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or specific analysis such as horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational} to cite only a few.
 
 % Because of the shit ton of trees
 In phylogenetic inference, tree rearrangement methods (or branch swapping) is used to explore tree space \citep[i.e. the realm of all the possible trees][]{page1993islands,morrison2007increasing,Sanderson448}.
-This tree space can be astonishingly big.
+In practice, this tree space can easily be astonishingly big.
 For example, considering the topology parameter only, the number of topologies that can be obtained with any tree with $n$ number of taxa is $(2n-3)!!$ for rooted trees and $(2n-5)!!$ for unrooted ones.
 To put it in perspectives, for only 14 taxa, the tree space contains more than a trillion topologies ($7.9\times10^{12}$)!
-Thus, one of the major challenge for tree rearrangement is to find a fast algorithm that is statistically to only visit a subset of these topologies and still be able to find the optimal topology. 
-The speed of the tree rearrangement can be solved by efficient algorithmic implementation (e.g. algorithms that require a low amount of memory by using ring-based tree structures)[CITE].
+Thus, one of the major challenge in tree rearrangement methods is to find a fast and reliable algorithm that only visits a subset of these topologies to find the optimal topology. 
+The speed of the tree rearrangement can be solved by efficient algorithm implementation (e.g. algorithms that require a low amount of memory by using ring-based tree structures)[CITE].
 Conversely, the reliability aspect must be based on strict rules in the algorithm avoiding unwanted tree rearrangements \citep{allen2001subtree,felsenstein2004inferring,lakner2008efficiency,goloboff1993character}.
 
 % Also these algorithms can have some caveats
@@ -177,12 +177,12 @@ Two of the most popular algorithms are the Subtree Pruning and Regrafting method
 These two algorithms are often considered separately since they produce different series of tree rearrangements: SPR produces more closely related trees than TBR.
 However, in practice, the efficiency of those algorithms for finding the best topology varies in function of the method, the data and their combination with other tree rearrangement algorithms \citep[e.g.][]{morrison2007increasing,lakner2008efficiency}.
 Also the way the trees are visited (see point 2 above) modifies the efficiency of these algorithms.
-For example, \cite{lakner2008efficiency} found, for Bayesian inference, that SPR (when sampled randomly) was more efficient than TBR (when sampled not-randomly) which was in turn more efficient than SPR (when sampled not-randomly).
+For example, \cite{lakner2008efficiency} found, for Bayesian inference, that SPR (when sampled randomly) was more efficient than TBR (when sampled non-randomly) which was in turn more efficient than SPR (when sampled non-randomly).
 
-The tree inference literature contains thorough and precise descriptions of both the algorithms \citep[e.g.][]{allen2001subtree,felsenstein2004inferring} and their caveats \citep[ie.e seepd and reliability - e.g.][]{morrison2007increasing,lakner2008efficiency,goloboff2014bias}.
+The tree inference literature contains thorough and precise descriptions of both the algorithms \citep[e.g.][]{allen2001subtree,felsenstein2004inferring} and their caveats \citep[i.e speed and reliability - e.g.][]{morrison2007increasing,lakner2008efficiency,goloboff2014bias}.
 However, the \textit{implementation} of the algorithms is often overlooked.
 Here, we will review two common branch rearrangement algorithms (SPR and TBR) and propose a more practical and intuitive definition of the algorithms that we believe can help their implementation.
-It is important to note that the algorithms described here are mathematically equivalent to the ones described in \cite{allen2001subtree} and \cite{felsenstein2004inferring} and we thus do not claim priority r originality on this method that as certainly already be implemented in many softwares and was ``discovered'' empirically by many coders.
+It is important to note that the algorithms described here are mathematically equivalent to the ones described in \cite{allen2001subtree} and \cite{felsenstein2004inferring} and we thus do not claim priority or originality on this method that as certainly already be implemented in many softwares and was ``discovered'' empirically by many coders.
 %TG: add something about writing code for humans not computers? (i.e. non-cryptic/obfuscating coding practices)
 
 \section{SPR and TBR described in literature}
@@ -199,9 +199,9 @@ It is important to note that the algorithms described here are mathematically eq
 % Definitions: \cite{allen2001subtree,felsenstein2004inferring}
 
 \subsubsection{Subtree Pruning and Regrafting (SPR)}
-This method consists in removing any subtree from the original tree (including all trees with only one tip and one edge, i.e. the individual tips) and reinserting it along every edges back on the original tree \citep[see Fig \ref{Figure_SPR};][]{felsenstein2004inferring}.
+This method consists in removing any subtree from the original tree (including all trees with only one tip and one edge, i.e. the individual tips) and reinserting it along every edges back on the original tree \citep[see Fig \ref{Figure_SPR} and ][]{felsenstein2004inferring}.
 In other words, a tree with $n$ taxa, is split into two trees: the target tree with $n_{target}$ taxa and the subtree with $n_{subtree}$ taxa (where $n_{subtree} \geq 1$).
-The substree is then reinserted in the $2n_{target}-3$ positions available on the target tree \citep{felsenstein2004inferring}.
+The substree is then reinserted in the $(2n_{target}-3)$ positions available on the target tree \citep{felsenstein2004inferring}.
 Thus, the total number of SPR rearrangements for an original tree with $n$ taxa is $4(n-3)(n-2)$.
 Redundant tree topologies occur when the subtree is regrafted (or rebranched) on it's original position and on one of the neighbouring edge to it's original position \citep{allen2001subtree}.
 
@@ -221,7 +221,6 @@ Thus the number of unique topologies obtained by SPR is $4(n-3)(n-4)$.
 \label{Figure_SPR}
 \end{figure}
 
-
 \subsubsection{Tree Bisection and Reconnection (TBR)}
 This method consists in breaking the original tree into two distinct subtrees (the bisection).
 The first subtree is then sequentially rerooted on each of its edges and then rebranched on every edges of the second subtree (the reconnection).
@@ -240,14 +239,11 @@ For a tree with $n$ taxa separated into two trees with $n_{1}$ taxa and $n_{2}$ 
 \label{Figure_TBR}
 \end{figure}
 
-
 \section{Implementation spin}
-These two algorithms can be see as technically different since they will produce different tree islands, for example, the SPR will, in theory explore less topologies than the TBR \citep[see above and][]{morrison2007increasing,lakner2008efficiency}.
-However, regarding the once one excludes the visiting of redundant topologies in both algorithms, they can be see as a generalised way to explore effectively all possible tree topologies.
-First, as described in \cite{allen2001subtree} (but not in \citealt{felsenstein2004inferring}), a simple rule can be applied to avoid redundant topologies in both SPR and TBR algorithm: in both cases the the rebranching/reconnection should never occur on the origin edge (obviously) but neither on the neighbouring ones.
-Second, SPR can be seen as a TBR where the rerooting is only done on the edge the closest to the bisection point.
-We believe that considering SPR as a constrained TBR greatly facilitates its algorithmic implementation.
-see Fig \ref{Figure_TBR_modif}.
+These two algorithms can be seen as technically different since they will produce different tree islands, for example, the SPR will, in theory explore less topologies than the TBR \citep[see above and][]{morrison2007increasing,lakner2008efficiency}.
+However, once one excludes the visiting of redundant topologies in both algorithms, they can be seen as a generalised way to explore effectively all possible tree topologies.
+First, as described in \cite{allen2001subtree} (but not in \citealt{felsenstein2004inferring}), a simple rule can be applied to avoid redundant topologies in both SPR and TBR algorithm: in both cases the the rebranching/reconnection should never occur on the edge of origin (the red arrow in Figs \ref{Figure_SPR}, \ref{Figure_TBR} and \ref{Figure_TBR_modif}) but neither on the neighbouring ones \citep{allen2001subtree}.
+Second and foremost, an SPR algorithm can be implemented as a TBR one where the rerooting is only done on the edge the closest to the bisection point (see Fig \ref{Figure_TBR_modif}).
 
 \begin{figure}[!htbp]
 \centering
@@ -256,23 +252,15 @@ see Fig \ref{Figure_TBR_modif}.
 \label{Figure_TBR_modif}
 \end{figure}
 
-%Check how it's done in different softwares: RAxML, phangorn?
+We believe that such consideration of the SPR algorithm as a constrained TBR highly facilitates both algorithm's implementation.
+In fact, in this case only one algorithm needs to be implemented with one mandatory restricting rules (no reconnection on the bisection edge and it's neighbours) and an optional restriction that can be activate or not to create either TBR or SPR (respectively rerooting on any edge or only on the bisection one).
+This approach is not different than the classic SPR and TBR algorithms described in the literature \citep{allen2001subtree,felsenstein2004inferring} but proposes an easier implementation.
 
-% \subsection{Neighbour Rule}
-% Neighbour Rule described \citep[in other words;][]{allen2001subtree}.
-
-% \subsection{SPR as TRB (Subtree Rerooting and Branching)}
-
-% \section{Conclusion}
-
-This way is not different than the classic SPR/TBR but it's a better implementation.
-
-Ideally we want a tree rearrangement method that samples the tree space evenly or, at worse, randomly.
-\cite{lakner2008efficiency} proposes shifts in branch swapping algorithms during the tree search phase: first allowing bold branch swapping algorithms to explore the overall tree space and then using more conservative ones to do a ``fine grain'' search in local optima.
-
-
-% \section{Data availability and reproducibility}
-% %TG: Probably some link to morphy
+One of the major concern in phylogenetic inference, during the tree search phase is to evenly (or at worst, randomly) sample the tree space but without spending to much time sampling all possible topologies.
+This allows to identify the different topology islands where the tree search must be focused in order to find the optimal topology.
+One solution to achieve this it to shift between tree rearrangement algorithms during the tree search: first, using an algorithm allowing bold tree rearrangements to explore the overall tree space and then a more conservative one to do a ``fine grain'' search in local optima \citep{lakner2008efficiency}.
+This joint SPR-TBR implementation could easily allow such tree rearrangement shifts by switching between the different restriction rules without implementing different algorithms.
+For example, one could first allow the algorithm to reroot the bissected tree randomly on each of it's edges, creating bolder rearrangements (i.e. exploring the overall tree space) and the constrict the algorithm to only reroot the tree on the edge closest to the bisection edge, creating ``finer grain'' search (i.e. exploring only the SPR island).
 
 
 \section{Acknowledgments}
@@ -284,39 +272,3 @@ European Research Council under the European Union’s Seventh Framework Program
 
 \end{document}
 
-
-
-% For a tree ((A,B),C,(D,E));
-
-% 1 - Clip A and rebranch everywhere:
-% ((A,B),C,(D,E));
-% (B,(C,A),(D,E));
-% (B,C,((A,D),E));
-% (B,C,(A,(A,E)));
-% That’s 4 trees including the original one!
-% If reach 0 trees, go to 4.
-
-% 2 - Clip (A,B) and rebranch everywhere:
-% blablabal…
-% 3 trees
-% If reach 0 trees, go to 4.
-
-% 3- Clip ((A,B),C) and rebranch everywhere:
-% blabalbalba…
-% 0 trees
-% If reach 0 trees, go to 4.
-
-% 4 - Clip !A, rebranch everywhere BUT not to the neighbour branches.
-% blablalba.
-% 2 trees * (number of tips - 1)  = 8 // The -1 is A
-% If reach 0 trees, go to 6.
-
-% 5 - Clip all dichotomies !(A.B), rebranch everywhere BUT not to the neighbour branches/
-% blabalbal…
-% 0 trees.
-
-% If reach 0 trees, go to 6.
-% 6 - Stop
-
-% That’s all folks! Using this algorithm you get… 30 trees!
-% Okay, I think it look nicer on paper (I’ll show you tomorrow morning) but it works totally! One only detail that we can improve (and I suspect that’s what PAUP is fucking up) is that step 2, (as step 1) re-includes the original tree (hard to show on unrooted onewicks but obvious on paper). We can reach our 29 trees by removing that one!
