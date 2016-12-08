@@ -146,12 +146,18 @@ blablabla
 \section{Introduction}
 
 % Tree rearrangement is paramount
-Phylogenetics, as the way to infer the relations between organisms, is at the base of literally every endeavour in modern biology ans has also important ramifications outside of biological sciences \citep[e.g. linguistics;][]{Bouckaert24082012}.
-Although many of the methods related phylogenetics, ranging from gene alignments \citep[e.g.][]{Tan01092015} to tree comparisons \citep[e.g.][]{kuhner2015treComparison} are widely studied, used and taught \citep{desalle2012phylogenomics}, one crucial aspect, tree rearrangement methods, is often ignored or over-looked by most biologists.
-In fact, these methods are used during crucial steps of the phylogenetic inference procedure (i.e. ``building'' the trees) since they allow to efficiently explore the tree space \citep[see ][]{Sanderson448} in search for the best topology, whether based on optimality criteria \citep[e.g. maximum parsimony; ][]{swofford2003paup} or probabilistic methods \citep[e.g. likelihood or Bayesian; ][]{Stamatakis21012014,Ronquist2012mrbayes}.
-Moreover, tree rearrangement methods are also at the base of some post tree inference tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or specific analysis such as horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational} to cite only a few.
+Phylogenetic studies are confronted with the combinatoric problem of intractably large numbers of tree solutions arising from increasing numbers of terminals \citep[]{Felsenstein:1978vh}.
+To address this problem, tree rearrangement procedures permit the exploration of restricted parts of ``tree space'' close to target solutions.
+These tree rearrangement methods are used during phylogenetic inference itself as an efficient exploration of tree space \citep[see ][]{Sanderson448} in the search for optimal topologies. 
+Moreover, tree rearrangement methods are also used in some post-search tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or specific analysis such as horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational}.
 
-% Because of the shit ton of trees
+Recently, Goloboff and Simmons \citep[(2014)]{goloboff2014bias} examined biases in tree searches arising from branch-swapping procedures, noting in particular how these biases can influence support statistics including bootstrap values and posterior probabilities arising from Markov chain results.
+They note that the biases are amplified if care is not taken to avoid redundant swaps.
+However, the question of how redundant swaps are avoided is not eminently clear.
+The explanations given for branch-swapping algorithms (reviewed below) given in most popular texts and reviews will almost certainly result in redundant topologies within even the same round of branch swapping.
+
+
+
 In phylogenetic inference, tree rearrangement methods (or branch swapping) is used to explore tree space \citep[i.e. the realm of all the possible trees;][]{page1993islands,morrison2007increasing,Sanderson448}.
 In practice, this tree space can be sufficiently big so as to make its exhaustive exploration impossible.
 For example, considering the topology parameter only, the number of topologies that can be obtained with any tree with $n$ number of taxa is $(2n-3)!!$ for rooted trees and $(2n-5)!!$ for unrooted ones.
