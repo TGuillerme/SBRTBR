@@ -245,6 +245,16 @@ By extension, therefore, the source tree is the clipped subtree that does not co
 \label{Figure_TBR}
 \end{figure}
 
+\section{Patterns Generating Redundant Swaps}
+The most obvious case in which a clipping and reconnection procedure results in a redundant topology is the case of reinserting the clipped subtree to its original position.
+However, it is trivially easy to avoid these operations.
+Figure 1 shows two different clipping and reconnection operations that will result in the same topology. 
+What they share in common is that they both result from reinserting the clipped subtree to a branch \textit{neighboring} the original clipping site.
+
+However, another way to create this same result is to clip the tree as shown in [Figure 2]. 
+This clips the tree at the smallest subtree that includes both clades. %This is possibly coincidental, but possibly also work thinking about.
+Rerooting this clipped subtree on the branch subtending terminal D[?] and reinserting it to the original clipping site generates this same topology.
+
 \section{Implementation spin}
 These two algorithms can be seen as technically different since they will produce different tree islands, for example, the SPR will, in theory explore fewer topologies than the TBR \citep[see above and][]{morrison2007increasing,lakner2008efficiency}.
 However, once one excludes the visiting of redundant topologies in both algorithms, they can be seen as a generalised way to explore effectively all possible tree topologies.
