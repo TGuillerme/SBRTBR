@@ -204,10 +204,14 @@ It is important to note that the algorithms described here are mathematically eq
 
 The subtree pruning and regrafting method is commonly described as breaking a tree into to two subtrees and reinserting \textit{one} of these subtrees---the source tree---into all non-redundant positions on the other tree (termed the target tree).
 In some explanations the target tree is then reinserted into all available positions on the source subtree (e.g. Swofford and Sullivan, fig. 8.5).
-However, if all possible subtrees are clipped and reinserted exactly according to the rules described, then they will always generate redundant treesp[FIGURE1].
+However, if all possible subtrees are clipped and reinserted exactly according to the rules described, then they will always generate redundant trees[FIGURE1].
 In many cases, branch breaking and swapping would continue, long after the number of non-redundant topologies has been exhausted, wasting valuable computational time.
+
+TBR differs from SPR in that the source subtree is reinserted before reconnection to the target tree.
+Thus TBR and SPR are seen to differ only in that rerooting of the subtree only takes place in TBR.
+All possible rerootings of the source subtree are attempted before the next clipping is made.
 Because the SPR is a strict subset of TBR moves on any given bifurcating tree, then the problem described here holds as well for TBR.
-%MB: To make this a bit headier at this point, it might be worth estimating how many more (even if approximately) redundant topologies could be visited under TBR than SPR, showing even more time wasted.
+In either case, it is clear that not all possible branch breakings and reinsertions need to be attempted.
 
 \begin{figure}[!htbp]
 \centering
@@ -216,6 +220,24 @@ Because the SPR is a strict subset of TBR moves on any given bifurcating tree, t
 \label{Figure_SPR}
 \end{figure}
 
+\section{The Target and Source Tree}
+What defines the target and source trees? 
+When a subtree is removed from a parent tree and reconnected to various points on the remaining subtree, they implicitly become source and target trees, respectively.
+However, with respect to avoiding redundant swaps, source and target are here redefined with respect to the order of clipping. 
+
+% MDB: At this point, it comes clear to me that a glossary or box text might be a useful supplement to define some terms. Secondly, it will be good for us to settle on a few terms and standardise them across the MS.
+Although not all clipping and reinsertion points need to be attempted, all possible non-unique moves do need to be tried. 
+Clipping (or the enumeration of possible clipping sites) can be made by completing a tree traversal over the initial parent tree.
+However, because the parent trees are usually unrooted in practice, an arbitary starting point needs to be selected.
+For the purpose of this paper, we elect the node immediately adjacent to the first enumerated tip (usually tip A).
+Thus, the trees are implicitly rooted by the traversal procedure.
+Clipping may proceed either in postorder or preorder, but in either case, the recursive traversal concludes at the node in which the traversal was initiated.
+
+Because the tree is now implicitly rooted, we can define target and source trees for SPR and TBR with respect to this pattern.
+For the purposes of this paper, the target tree is the subtree that contains the starting point of the tree-clipping traversal.
+By extension, therefore, the source tree is the clipped subtree that does not contain the starting point.
+
+% MDB: I think this figure caption is likely to go or be changed? 
 \begin{figure}[!htbp]
 \centering
    \includegraphics[width=0.9\textwidth]{Figure/TBR.pdf}
