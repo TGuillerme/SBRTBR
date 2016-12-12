@@ -276,8 +276,10 @@ All three of these involve clipping a subtree and moving it to a neighbouring br
 However, what the first two have in common is that neither clipped tree is the tree containing the starting point of clipping. % I never explicitly defined this, but I think it should be stated as off the node adjacent to A.
 
 In SPR moves, when a branch is clipped, the source tree is reinserted everywhere except the original clipping site \textit{and} any branches immediately adjacent to the original site. 
-In turn then, the target tree (containing the traversal starting point) is rejoined to the source tree at all possible points. 
+In turn then, the target tree (containing the traversal starting point) is rejoined to the source tree at all possible points \textit{including} branches neighboring the original clipping site.
 
+For TBR, exactly the same rule follows. 
+However, when the source tree is rerooted, it must be reinserted to the original clipping point on the target tree \textit{and} the branches adjacent to it.
 
 % Dunno if we'll keep the stuff below ##################
 % ######################################################
