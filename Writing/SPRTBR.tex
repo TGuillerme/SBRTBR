@@ -151,7 +151,7 @@ To address this problem, heuristic solutions involving tree rearrangements permi
 This greatly accelerates phylogenetic analysis by ignoring topologies that are unlikely to be optimal.
 In addition to their use in the phylogenetic tree search process itself, tree rearrangement strategies are employed in some post-search tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or methods for detecting horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational}.
 
-Recently, Goloboff and Simmons \citep[(2014)]{goloboff2014bias} examined biases in tree searches arising from heuristic methods, noting in particular how these biases can influence support statistics including bootstrap values and posterior probabilities arising from Markov chain results.
+Recently, \citet{goloboff2014bias} examined biases in tree searches arising from heuristic methods, noting in particular how these biases can influence support statistics including bootstrap values and posterior probabilities arising from Markov chain results.
 They note that the biases are amplified if branch-swapping procedures do not take care to avoid redundant swaps.
 Additionally, the speed and efficiency of branch-swapping strategies is of critical importance.
 Considerable time should be saved by not visiting topologies that have already been seen.
@@ -213,12 +213,22 @@ All possible rerootings of the source subtree are attempted before the next clip
 Because the SPR is a strict subset of TBR moves on any given bifurcating tree, then the problem described here holds as well for TBR.
 In either case, it is clear that not all possible branch breakings and reinsertions need to be attempted.
 
+
+
 \begin{figure}[!htbp]
 \centering
-   \includegraphics[width=0.9\textwidth]{Figure/SPR.pdf}
-\caption{Suptree Pruning and Regrafting (SPR). Modified from \cite{felsenstein2004inferring}, Figure 4.5. \textbf{1}: a random subtree with $n$ tips is selected; \textbf{2}: the red arrow designates the edge where the subtree was previously branched and the black one the new insertion point. Note that all the edges but the one with the red arrow are potential insertion points. \textbf{3}: the new topology obtained by one SPR rearrangement.}
+   \includegraphics[width=0.7\textwidth]{Figure/Figure1.pdf}
+\caption{Example of redundant swaps with Suptree Pruning and Regrafting (SPR). In this example, two independent pruning (1, clade ``(G,F)'' and 2, clade ``(E,D)'') and regrafting (orange doted line) leads to the exact same topology. Note that both regraftings are done on a neighbouring branch (the orange dots denotes the original position of the clades).}
 \label{Figure_SPR}
 \end{figure}
+
+
+% \begin{figure}[!htbp]
+% \centering
+%    \includegraphics[width=0.9\textwidth]{Figure/SPR.pdf}
+% \caption{Suptree Pruning and Regrafting (SPR). Modified from \cite{felsenstein2004inferring}, Figure 4.5. \textbf{1}: a random subtree with $n$ tips is selected; \textbf{2}: the red arrow designates the edge where the subtree was previously branched and the black one the new insertion point. Note that all the edges but the one with the red arrow are potential insertion points. \textbf{3}: the new topology obtained by one SPR rearrangement.}
+% \label{Figure_SPR}
+% \end{figure}
 
 \section{The Target and Source Tree}
 What defines the target and source trees? 
@@ -293,6 +303,18 @@ This allows to identify the different topology islands where the tree search mus
 One solution to achieve this it to shift between tree rearrangement algorithms during the tree search: first, using an algorithm allowing bold tree rearrangements to explore the overall tree space and then a more conservative one to do a ``fine grain'' search in local optima \citep{lakner2008efficiency}.
 This joint SPR-TBR implementation could easily allow such tree rearrangement shifts by switching between the different restriction rules without implementing different algorithms.
 For example, one could first allow the algorithm to reroot the bissected tree randomly on each of it's edges, creating bolder rearrangements (i.e. exploring the overall tree space) and the constrict the algorithm to only reroot the tree on the edge closest to the bisection edge, creating ``finer grain'' search (i.e. exploring only the SPR island).
+
+
+%% Glossary %TG: I've added a figure that we can stuck in the supplementary as well
+% 
+% Tip/Node/Edge
+% Original tree: the tree considered for branch swapping operation
+% Clipped tree: the sub-tree containing one to n-2 taxa removed from the original tree
+% Target tree: the tree that underwent a clipping operation and has now n-1 to n-(n-2) taxa. %TG: we could change that to a more obvious term
+% Clipping (to replace: prunning or bissection): removing a sub-tree containing one to n-2 taxa from a tree. The clipping results in obtaining two trees: the clipped tree and the target tree.
+% Regrafting/reconnecting: %TG: we should change that to a unique term (same way as clipping, I like reconnecting).
+% Swap: one clipping regrafting operation
+% Neighbour edge: the edge adjacent to a selcted edge
 
 
 \section{Acknowledgments}
