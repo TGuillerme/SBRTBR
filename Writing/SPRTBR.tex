@@ -251,10 +251,26 @@ However, it is trivially easy to avoid these operations.
 Figure 1 shows two different clipping and reconnection operations that will result in the same topology. 
 What they share in common is that they both result from reinserting the clipped subtree to a branch \textit{neighboring} the original clipping site.
 
-However, another way to create this same result is to clip the tree as shown in [Figure 2]. 
 This clips the tree at the smallest subtree that includes both clades. %This is possibly coincidental, but possibly also work thinking about.
 Rerooting this clipped subtree on the branch subtending terminal C and reinserting it to the original clipping site generates this same topology.
+Conversely, this can be seen as clippling the clade consisting of terminals A and B and reinserting that clade on its neighboring branch (the one subtending C).
 
+We therefore now see three different branch-breaking operations to arrive at the same topology. 
+All of them arising from the clipping and moving of a branch to a neighbouring site.
+In the next section we show how to employ the order of clipping so that only one of these swaps is made even when the same clipping event occurs.
+
+\section{Avoiding Redundant Swaps}
+In the recurring example of redundant swaps from Figures 1 & 2, we see three possible clipping and reconnection moves that result in the same tree.
+However, we only need to commit one of these moves at most once.
+All three of these involve clipping a subtree and moving it to a neighbouring branch. 
+However, what the first two have in common is that neither clipped tree is the tree containing the starting point of clipping. % I never explicitly defined this, but I think it should be stated as off the node adjacent to A.
+
+In SPR moves, when a branch is clipped, the source tree is reinserted everywhere except the original clipping site \textit{and} any branches immediately adjacent to the original site. 
+In turn then, the target tree (containing the traversal starting point) is rejoined to the source tree at all possible points. 
+
+
+% Dunno if we'll keep the stuff below ##################
+% ######################################################
 \section{Implementation spin}
 These two algorithms can be seen as technically different since they will produce different tree islands, for example, the SPR will, in theory explore fewer topologies than the TBR \citep[see above and][]{morrison2007increasing,lakner2008efficiency}.
 However, once one excludes the visiting of redundant topologies in both algorithms, they can be seen as a generalised way to explore effectively all possible tree topologies.
