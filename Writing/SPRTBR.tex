@@ -151,35 +151,35 @@ To address this problem, heuristic solutions involving tree rearrangements permi
 This greatly accelerates phylogenetic analysis by ignoring topologies that are unlikely to be optimal.
 In addition to their use in the phylogenetic tree search process itself, tree rearrangement strategies are employed in some post-search tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or methods for detecting horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational}.
 
-Recently, Goloboff and Simmons \citep[(2014)]{goloboff2014bias} examined biases in tree searches arising from branch-swapping procedures, noting in particular how these biases can influence support statistics including bootstrap values and posterior probabilities arising from Markov chain results.
-They note that the biases are amplified if care is not taken to avoid redundant swaps.
+Recently, Goloboff and Simmons \citep[(2014)]{goloboff2014bias} examined biases in tree searches arising from heuristic methods, noting in particular how these biases can influence support statistics including bootstrap values and posterior probabilities arising from Markov chain results.
+They note that the biases are amplified if branch-swapping procedures do not take care to avoid redundant swaps.
 Additionally, the speed and efficiency of branch-swapping strategies is of critical importance.
 Considerable time should be saved by not visiting topologies that have already been seen.
 However, the question of how redundant swaps are avoided may not be immediately obvious from the explanations given in most texts [EXAMPLES: Felsenstein, Wiley and Lieberman, Swofford and Sullivan].
 The explanations given for branch-swapping algorithms (reviewed below) given in most popular texts and reviews will almost certainly result in redundant topologies within even the same round of branch swapping.
 
+How then are redundant swaps avoided?
 In this review, we provide more precise explanations of subtree pruning and regrafting (SPR) and tree-bisection and reconnection (TBR) rearrangement strategies that result only in unique trees within a single round. 
 These explanations account for the order in which branches are broken as well as the pattern in which subtrees are reconnected to the target tree.
-We do not claim to take credit for these methods---they, or something equivalent to them must already be implemented in existing phylogenetic software.
-Furthermore, they are implicit in some mathematical accounts of branch-swapping processes [EXAMPLES].
+We do not claim credit for these methods---they, or something equivalent to them must already be implemented in existing phylogenetic software.
+Furthermore, they are implicit in some mathematical accounts of branch-swapping processes in which the number of unique 1-move rearrangements are counted [EXAMPLES].
 However, we provide an explicit, verbose account that would be useful in assisting any investigators who need to program such routines for the first time. 
 We acknowledge that few may need to do this, however we follow Goloboff ([]1993) in that knowledge of underlying routines helps to foster refinements and improvements of existing strategies that have a large user base.
 
-% Also these algorithms can have some caveats
+% I'm really not sure this section is needed, but I'll leave it for now. It might be possible to fit it in.
+% For now, it's mainly a digression from the main point: only unique 1-move swaps from a starting tree
 Two main points need to be considered for the reliability of tree arrangement algorithms:
 \begin{enumerate}
     \item First, when the tree search only visits some possible solutions this can create problems by having a higher probability of visiting a specific tree topology island since the probability of obtaining any topology by tree rearrangement will not be equal (some topologies might be more visited by chance).
     More concretely, for a tree with $n$ taxa, tree rearrangement algorithms can produce $M$ topologies including $m$ similar ones.
-    If the tree search algorithm is set to subsample $m$ topologies only, it can possibly only subsample the $m$ similar topologies thus being literally ineffective at exploring tree space \citep{allen2001subtree}.
+    If the tree search algorithm is set to subsample $m$ topologies only, it can possibly only subsample the $m$ similar topologies thus being ineffective at exploring tree space \citep{allen2001subtree}.
     \item Second, the order in which the possible tree rearrangement topologies are visited is also paramount.
     In fact, to avoid any statistical bias, the visiting order should be strictly random \citep{goloboff2014bias} although, in practice, and for algorithm speed reasons, this is rarely the case (e.g. using post/pre-order traversals [CITE]).
     This as been shown to introduce several biases in theoretical examples \citep{goloboff2014bias} although, to our knowledge, has not been demonstrated empirically.
 \end{enumerate}
 
 % We therefore need some good algorithms.
-Two of the most popular algorithms are the Subtree Pruning and Regrafting method (SPR) and the Tree Bisection and Reconnection method \citep[TBR - see Fig. \ref{Figure_SPR} and \ref{Figure_TBR} and text below for detailled description;][]{allen2001subtree,felsenstein2004inferring}.
-These two algorithms are often considered separately since they produce different series of tree rearrangements: SPR produces more closely related trees than TBR.
-However, in practice, the efficiency of those algorithms for finding the best topology varies in function of the method, the data and their combination with other tree rearrangement algorithms \citep[e.g.][]{morrison2007increasing,lakner2008efficiency}.
+% Boring! (Not that what follows is terribly exciting) This isn't a paper about needing good algorithms, it's a paper about how to implement some good algorithms correctly (or efficiently?).
 Also the way the trees are visited (see point 2 above) modifies the efficiency of these algorithms.
 For example, \cite{lakner2008efficiency} found, for Bayesian inference, that SPR (when sampled randomly) was more efficient than TBR (when sampled non-randomly) which was in turn more efficient than SPR (when sampled non-randomly).
 
