@@ -146,28 +146,39 @@ blablabla
 \section{Introduction}
 
 % Tree rearrangement is paramount
-Phylogenetic studies are confronted with the combinatoric problem of intractably large numbers of tree solutions arising from increasing numbers of terminals \citep[]{Felsenstein:1978vh}.
+Phylogenetic studies are confronted with the combinatoric problem of intractably large numbers of tree solutions arising from increasing numbers of terminals \citep{Felsenstein:1978vh}.
+%TG: maybe we could replace "terminals" by "taxa"? Seems a bit less mathsy.
 To address this problem, heuristic solutions involving tree rearrangements permit exploration of restricted parts of ``tree space'' close to target solutions.
 This greatly accelerates phylogenetic analysis by ignoring topologies that are unlikely to be optimal.
 In addition to their use in the phylogenetic tree search process itself, tree rearrangement strategies are employed in some post-search tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or methods for detecting horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational}.
 
-Recently, \citet{goloboff2014bias} examined biases in tree searches arising from heuristic methods, noting in particular how these biases can influence support statistics including bootstrap values and posterior probabilities arising from Markov chain results.
-They note that the biases are amplified if branch-swapping procedures do not take care to avoid redundant swaps.
+Recently, \citet{goloboff2014bias} examined biases in tree searches arising from heuristic methods, noting in particular how these biases can influence support statistics including bootstrap values and posterior probabilities arising from %Markov chain results.
+Bayesian inference. %TG: the posterior probabilities are calculated from Bayes theorem, the MCMC is just a way to get there. I think.
+They note that the biases are amplified if branch-swapping procedures do not take care to avoid redundant swaps (Fig.\ref{Figure_1}).
 Additionally, the speed and efficiency of branch-swapping strategies is of critical importance.
-Considerable time should be saved by not visiting topologies that have already been seen.
-However, the question of how redundant swaps are avoided may not be immediately obvious from the explanations given in most texts [EXAMPLES: Felsenstein, Wiley and Lieberman, Swofford and Sullivan].
+Considerable time should be saved by not visiting topologies that have already been analysed.
+However, the question of how redundant swaps are avoided may not be immediately obvious from the explanations given in most texts \citep{swofford2003phylogeny,felsenstein2004inferring,wiley2011phylogenetics}.
 The explanations given for branch-swapping algorithms (reviewed below) given in most popular texts and reviews will almost certainly result in redundant topologies within even the same round of branch swapping.
 
-How then are redundant swaps avoided?
-In this review, we provide more precise explanations of subtree pruning and regrafting (SPR) and tree-bisection and reconnection (TBR) rearrangement strategies that result only in unique trees within a single round. 
-These explanations account for the order in which branches are broken as well as the pattern in which subtrees are reconnected to the target tree.
-We do not claim credit for these methods---they, or something equivalent to them must already be implemented in existing phylogenetic software.
-Furthermore, they are implicit in some mathematical accounts of branch-swapping processes in which the number of unique 1-move rearrangements are counted [EXAMPLES].
-However, we provide an explicit, verbose account that would be useful in assisting any investigators who need to program such routines for the first time. 
-We acknowledge that few may need to do this, however we follow Goloboff ([]1993) in that knowledge of underlying routines helps to foster refinements and improvements of existing strategies that have a large user base.
+\begin{figure}[!htbp]
+\centering
+   \includegraphics[width=0.9\textwidth]{Figure/Figure_RedundantSwaps.pdf}
+\caption{Example of redundant swaps. Three independent pruning (clades ``(A,B)'', ``(G,F)'' and ``(E,D)'') and regrafting (orange doted line) leads to the exact same topology. The orange dots represents the clades original position.}
+\label{Figure_1}
+\end{figure}
 
-% I'm really not sure this section is needed, but I'll leave it for now. It might be possible to fit it in.
-% For now, it's mainly a digression from the main point: only unique 1-move swaps from a starting tree
+How then are redundant swaps avoided? %TG: Maybe something like: "This leads to the lack of clear explanation on how to avoid redundant swaps."
+In this review, we provide more precise explanations of subtree pruning and regrafting (SPR) and tree-bisection and reconnection (TBR) rearrangement strategies that result only in unique tree topologies within a single round. 
+These explanations account for the order in which branches are broken as well as the pattern in which subtrees are reconnected to the target tree.
+We do not claim credit for these methods -- they, or something equivalent to them must already be implemented in existing phylogenetic software.
+Furthermore, they are implicit in some mathematical accounts of branch-swapping processes in which the number of unique 1-move rearrangements are counted \citep{allen2001subtree}.% TG: is that what you meant with [EXAMPLES]?
+However, we provide an explicit, verbose account that would be useful in assisting any investigators who need to program such routines for the first time. 
+We acknowledge that few may need to do this, however we follow \citet{goloboff1993character} in that knowledge of underlying routines helps to foster refinements and improvements of existing strategies that have a large user base. %TG: not sure about the "few needs to know" part. It's kind of auto-diminishing the impact of the paper. Maybe we can go with something like:
+%We believe that these explanation will help researchers using phylogenetic to better understand the underlying search routines \citep{goloboff1993character} and can foster refinement and improvement for implementing branch swapping strategies for tree inference or post-tree analysis \citep[e.g.][]{bordewich2005computational,goloboff2014bias,kuhner2015treComparison}.
+
+
+%MB I'm really not sure this section is needed, but I'll leave it for now. It might be possible to fit it in.
+%MB For now, it's mainly a digression from the main point: only unique 1-move swaps from a starting tree
 Two main points need to be considered for the reliability of tree arrangement algorithms:
 \begin{enumerate}
     \item First, when the tree search only visits some possible solutions this can create problems by having a higher probability of visiting a specific tree topology island since the probability of obtaining any topology by tree rearrangement will not be equal (some topologies might be more visited by chance).
@@ -178,10 +189,12 @@ Two main points need to be considered for the reliability of tree arrangement al
     This as been shown to introduce several biases in theoretical examples \citep{goloboff2014bias} although, to our knowledge, has not been demonstrated empirically.
 \end{enumerate}
 
-% We therefore need some good algorithms.
-% Boring! (Not that what follows is terribly exciting) This isn't a paper about needing good algorithms, it's a paper about how to implement some good algorithms correctly (or efficiently?).
+%MB We therefore need some good algorithms.
+%MB Boring! (Not that what follows is terribly exciting) This isn't a paper about needing good algorithms, it's a paper about how to implement some good algorithms correctly (or efficiently?). %TG: agree
 Also the way the trees are visited (see point 2 above) modifies the efficiency of these algorithms.
 For example, \cite{lakner2008efficiency} found, for Bayesian inference, that SPR (when sampled randomly) was more efficient than TBR (when sampled non-randomly) which was in turn more efficient than SPR (when sampled non-randomly).
+%TG: that 
+
 
 The tree inference literature contains thorough and precise descriptions of both the algorithms \citep[e.g.][]{allen2001subtree,felsenstein2004inferring} and their caveats \citep[i.e speed and reliability - e.g.][]{morrison2007increasing,lakner2008efficiency,goloboff2014bias}.
 However, the \textit{implementation} of the algorithms is often overlooked.
@@ -214,15 +227,6 @@ Because the SPR is a strict subset of TBR moves on any given bifurcating tree, t
 In either case, it is clear that not all possible branch breakings and reinsertions need to be attempted.
 
 
-
-\begin{figure}[!htbp]
-\centering
-   \includegraphics[width=0.7\textwidth]{Figure/Figure1.pdf}
-\caption{Example of redundant swaps with Suptree Pruning and Regrafting (SPR). In this example, two independent pruning (1, clade ``(G,F)'' and 2, clade ``(E,D)'') and regrafting (orange doted line) leads to the exact same topology. Note that both regraftings are done on a neighbouring branch (the orange dots denotes the original position of the clades).}
-\label{Figure_SPR}
-\end{figure}
-
-
 % \begin{figure}[!htbp]
 % \centering
 %    \includegraphics[width=0.9\textwidth]{Figure/SPR.pdf}
@@ -248,12 +252,12 @@ For the purposes of this paper, the target tree is the subtree that contains the
 By extension, therefore, the source tree is the clipped subtree that does not contain the starting point.
 
 % MDB: I think this figure caption is likely to go or be changed? 
-\begin{figure}[!htbp]
-\centering
-   \includegraphics[width=0.9\textwidth]{Figure/TBR.pdf}
-\caption{Tree Bisection and Reconnection (TBR). Modified from \cite{felsenstein2004inferring}, Figure 4.6. \textbf{1}: the trees are split at a random edge and both subtrees are unrooted; \textbf{2}: the red arrow designates the edge where the red tree was previously connected and the black one designates the new rooting point on the red tree and its insertion on the black tree. Note that all the edges on the black tree (but the one with the red arrow) are potential reconnection points. \textbf{3}: the new topology obtained by one TBR rearrangement.}
-\label{Figure_TBR}
-\end{figure}
+% \begin{figure}[!htbp]
+% \centering
+%    \includegraphics[width=0.9\textwidth]{Figure/TBR.pdf}
+% \caption{Tree Bisection and Reconnection (TBR). Modified from \cite{felsenstein2004inferring}, Figure 4.6. \textbf{1}: the trees are split at a random edge and both subtrees are unrooted; \textbf{2}: the red arrow designates the edge where the red tree was previously connected and the black one designates the new rooting point on the red tree and its insertion on the black tree. Note that all the edges on the black tree (but the one with the red arrow) are potential reconnection points. \textbf{3}: the new topology obtained by one TBR rearrangement.}
+% \label{Figure_TBR}
+% \end{figure}
 
 \section{Patterns Generating Redundant Swaps}
 The most obvious case in which a clipping and reconnection procedure results in a redundant topology is the case of reinserting the clipped subtree to its original position.
@@ -270,7 +274,7 @@ All of them arising from the clipping and moving of a branch to a neighbouring s
 In the next section we show how to employ the order of clipping so that only one of these swaps is made even when the same clipping event occurs.
 
 \section{Avoiding Redundant Swaps}
-In the recurring example of redundant swaps from Figures 1 & 2, we see three possible clipping and reconnection moves that result in the same tree.
+In the recurring example of redundant swaps from Figures 1 \& 2, we see three possible clipping and reconnection moves that result in the same tree.
 However, we only need to commit one of these moves at most once.
 All three of these involve clipping a subtree and moving it to a neighbouring branch. 
 However, what the first two have in common is that neither clipped tree is the tree containing the starting point of clipping. % I never explicitly defined this, but I think it should be stated as off the node adjacent to A.
@@ -281,30 +285,41 @@ In turn then, the target tree (containing the traversal starting point) is rejoi
 For TBR, exactly the same rule follows. 
 However, when the source tree is rerooted, it must be reinserted to the original clipping point on the target tree \textit{and} the branches adjacent to it.
 
-% Dunno if we'll keep the stuff below ##################
-% ######################################################
-\section{Implementation spin}
-These two algorithms can be seen as technically different since they will produce different tree islands, for example, the SPR will, in theory explore fewer topologies than the TBR \citep[see above and][]{morrison2007increasing,lakner2008efficiency}.
-However, once one excludes the visiting of redundant topologies in both algorithms, they can be seen as a generalised way to explore effectively all possible tree topologies.
-First, as described in \cite{allen2001subtree} (but not in \citealt{felsenstein2004inferring}), a simple rule can be applied to avoid redundant topologies in both SPR and TBR algorithm: in both cases the rebranching/reconnection should never occur on the edge of origin (the red arrow in Figs \ref{Figure_SPR}, \ref{Figure_TBR} and \ref{Figure_TBR_modif}) but neither on the neighbouring ones \citep{allen2001subtree}.
-Second and foremost, an SPR algorithm can be implemented as a TBR one where the rerooting is only done on the edge the closest to the bisection point (see Fig \ref{Figure_TBR_modif}).
-
 \begin{figure}[!htbp]
 \centering
-   \includegraphics[width=0.9\textwidth]{Figure/TBR_modif.pdf}
-\caption{Generalised TBR. \textbf{1}: the trees are split at a random edge and both subtrees are unrooted; \textbf{2a}: the red tree is then rooted on the edge closest to the bisection edge and reconnected to an edge on the black tree (i.e. a SPR move); \textbf{2b}: the red tree is rooted on any of its edges and reconnected to an edge on the black tree (i.e. a TBR move). Note that in both cases, the red tree can not be reconnected on the edge of origin (indicated by the red arrow) nor on any of the adjacent edges (marked with a red cross) to avoid any redundant tree rearrangements.}
-\label{Figure_TBR_modif}
+   \includegraphics[width=0.7\textwidth]{Figure/Figure_Neighbour.pdf}
+\caption{Algorithm illustration for avoiding redundant swaps. If the entry point in the branch swapping traversal is on the tip ``A'' (denoted by the orange arrow), the clade containing the entry point (e.g. ``(A,B)'') can be rebranched everywhere on the target tree (the solid edges) apart from it's previous position (the orange doted line). Any other clades not containing the entry point (e.g. ``(F,G)'') can only be rebranched on edges not adjacent to the original position.}
+\label{Figure_SPR}
 \end{figure}
 
-We believe that such consideration of the SPR algorithm as a constrained TBR highly facilitates both algorithm's implementation.
-In fact, in this case only one algorithm needs to be implemented with one mandatory restricting rules (no reconnection on the bisection edge and it's neighbours) and an optional restriction that can be activate or not to create either TBR or SPR (respectively rerooting on any edge or only on the bisection one).
-This approach is not different than the classic SPR and TBR algorithms described in the literature \citep{allen2001subtree,felsenstein2004inferring} but proposes an easier implementation.
 
-One of the major concern in phylogenetic inference, during the tree search phase is to evenly (or at worst, randomly) sample the tree space but without spending to much time sampling all possible topologies.
-This allows to identify the different topology islands where the tree search must be focused in order to find the optimal topology.
-One solution to achieve this it to shift between tree rearrangement algorithms during the tree search: first, using an algorithm allowing bold tree rearrangements to explore the overall tree space and then a more conservative one to do a ``fine grain'' search in local optima \citep{lakner2008efficiency}.
-This joint SPR-TBR implementation could easily allow such tree rearrangement shifts by switching between the different restriction rules without implementing different algorithms.
-For example, one could first allow the algorithm to reroot the bissected tree randomly on each of it's edges, creating bolder rearrangements (i.e. exploring the overall tree space) and the constrict the algorithm to only reroot the tree on the edge closest to the bisection edge, creating ``finer grain'' search (i.e. exploring only the SPR island).
+% % Dunno if we'll keep the stuff below ##################
+% % ######################################################
+% \section{Implementation spin}
+% These two algorithms can be seen as technically different since they will produce different tree islands, for example, the SPR will, in theory explore fewer topologies than the TBR \citep[see above and][]{morrison2007increasing,lakner2008efficiency}.
+% However, once one excludes the visiting of redundant topologies in both algorithms, they can be seen as a generalised way to explore effectively all possible tree topologies.
+% First, as described in \cite{allen2001subtree} (but not in \citealt{felsenstein2004inferring}), a simple rule can be applied to avoid redundant topologies in both SPR and TBR algorithm: in both cases the rebranching/reconnection should never occur on the edge of origin (the red arrow in Figs %\ref{Figure_SPR}, \ref{Figure_TBR} and \ref{Figure_TBR_modif}
+% ) but neither on the neighbouring ones \citep{allen2001subtree}.
+% Second and foremost, an SPR algorithm can be implemented as a TBR one where the rerooting is only done on the edge the closest to the bisection point.% (see Fig \ref{Figure_TBR_modif}).
+
+% % \begin{figure}[!htbp]
+% % \centering
+% %    \includegraphics[width=0.9\textwidth]{Figure/TBR_modif.pdf}
+% % \caption{Generalised TBR. \textbf{1}: the trees are split at a random edge and both subtrees are unrooted; \textbf{2a}: the red tree is then rooted on the edge closest to the bisection edge and reconnected to an edge on the black tree (i.e. a SPR move); \textbf{2b}: the red tree is rooted on any of its edges and reconnected to an edge on the black tree (i.e. a TBR move). Note that in both cases, the red tree can not be reconnected on the edge of origin (indicated by the red arrow) nor on any of the adjacent edges (marked with a red cross) to avoid any redundant tree rearrangements.}
+% % \label{Figure_TBR_modif}
+% % \end{figure}
+
+
+
+% We believe that such consideration of the SPR algorithm as a constrained TBR highly facilitates both algorithm's implementation.
+% In fact, in this case only one algorithm needs to be implemented with one mandatory restricting rules (no reconnection on the bisection edge and it's neighbours) and an optional restriction that can be activate or not to create either TBR or SPR (respectively rerooting on any edge or only on the bisection one).
+% This approach is not different than the classic SPR and TBR algorithms described in the literature \citep{allen2001subtree,felsenstein2004inferring} but proposes an easier implementation.
+
+% One of the major concern in phylogenetic inference, during the tree search phase is to evenly (or at worst, randomly) sample the tree space but without spending to much time sampling all possible topologies.
+% This allows to identify the different topology islands where the tree search must be focused in order to find the optimal topology.
+% One solution to achieve this it to shift between tree rearrangement algorithms during the tree search: first, using an algorithm allowing bold tree rearrangements to explore the overall tree space and then a more conservative one to do a ``fine grain'' search in local optima \citep{lakner2008efficiency}.
+% This joint SPR-TBR implementation could easily allow such tree rearrangement shifts by switching between the different restriction rules without implementing different algorithms.
+% For example, one could first allow the algorithm to reroot the bissected tree randomly on each of it's edges, creating bolder rearrangements (i.e. exploring the overall tree space) and the constrict the algorithm to only reroot the tree on the edge closest to the bisection edge, creating ``finer grain'' search (i.e. exploring only the SPR island).
 
 
 %% Glossary %TG: I've added a figure that we can stuck in the supplementary as well
