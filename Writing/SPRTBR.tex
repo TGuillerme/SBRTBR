@@ -146,32 +146,31 @@ blablabla
 \section{Introduction}
 
 % Tree rearrangement is paramount
-Phylogenetic studies are confronted with the combinatoric problem of intractably large numbers of tree solutions arising from increasing numbers of terminals \citep{Felsenstein:1978vh}.
-%TG: maybe we could replace "terminals" by "taxa"? Seems a bit less mathsy.
-To address this problem, heuristic solutions involving tree rearrangements permit exploration of restricted parts of ``tree space'' close to target solutions.
+Phylogenetic tree inference methods are confronted with the combinatoric problem of unmanageable large numbers of tree solutions arising from increasing numbers of terminals \citep{Felsenstein:1978vh}.
+To address this problem, heuristic solutions involving tree rearrangements allows exploration of restricted parts of the ``tree space'' close to target solutions.
 This greatly accelerates phylogenetic analysis by ignoring topologies that are unlikely to be optimal.
-In addition to their use in the phylogenetic tree search process itself, tree rearrangement strategies are employed in some post-search tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or methods for detecting horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational}.
+In addition to their use in phylogenetic tree search process itself, tree rearrangement strategies are employed in some post-search tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or methods for detecting horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational}.
 
-Recently, \citet{goloboff2014bias} examined biases in tree searches arising from heuristic methods, noting in particular how these biases can influence support statistics including bootstrap values and posterior probabilities arising from %Markov chain results.
-Bayesian inference. %TG: the posterior probabilities are calculated from Bayes theorem, the MCMC is just a way to get there. I think.
-They note that the biases are amplified if branch-swapping procedures do not take care to avoid redundant swaps.
-Additionally, the speed and efficiency of branch-swapping strategies is of critical importance.
+Recently, \citet{goloboff2014bias} examined biases in tree searches arising from heuristic methods, noting in particular how these biases can influence support statistics including bootstrap values and posterior probabilities arising from Bayesian inference.
+They note that the biases are amplified if tree rearrangement %TG: I've standardised "branch-reinserting" to "tree rearrangement" for consistency
+procedures do not take care to avoid redundant rearrangements. %TG: I've standardised "swaps" to "rearrangement" for consistency
+Additionally, because tree rearrangement strategies are at the base of any phylogenetic studies, their speed and efficiency are of critical importance.
 Considerable time should be saved by not visiting topologies that have already been analysed.
-However, the question of how redundant swaps are avoided may not be immediately obvious from the explanations given in most texts \citep{swofford2003phylogeny,felsenstein2004inferring,wiley2011phylogenetics}.
-The explanations given for branch-swapping algorithms (reviewed below) given in most popular texts and reviews will almost certainly result in redundant topologies within even the same round of branch swapping.
+Although tree rearrangement strategies have been well studied in the literature, the question of how redundant rearrangements are avoided may not be immediately obvious from the explanations given in most texts \citep{swofford2003phylogeny,felsenstein2004inferring,wiley2011phylogenetics}.
+In fact, the explanations given for tree rearrangement algorithms (reviewed below) given in most popular texts and reviews will almost certainly result in redundant topologies within even the same round of branch reinserting.
 
-How then are redundant swaps avoided? %TG: Maybe something like: "This leads to the lack of clear explanation on how to avoid redundant swaps."
-In this review, we provide more precise explanations of subtree pruning and regrafting (SPR) and tree-bisection and reconnection (TBR) rearrangement strategies that result only in unique tree topologies within a single round. 
-These explanations account for the order in which branches are broken as well as the pattern in which subtrees are reconnected to the target tree.
-We do not claim credit for these methods -- they, or something equivalent to them must already be implemented in existing phylogenetic software.
-Furthermore, they are implicit in some mathematical accounts of branch-swapping processes in which the number of unique 1-move rearrangements are counted \citep{allen2001subtree}.% TG: is that what you meant with [EXAMPLES]?
+How then are redundant rearrangements avoided?
+In this review, we provide more precise explanations of the subtree pruning and regrafting (SPR) and tree-bisection and reconnection (TBR) rearrangement strategies that result only in unique tree topologies within a single round. 
+These explanations account for the order in which branches are broken as well as the pattern in which subtrees are reconnected to the target subtree.
+We do not claim credit for these methods; they, or something equivalent to them must already be implemented in existing phylogenetic software.
+Furthermore, they are implicit in some mathematical accounts of tree rearrangement processes in which the number of unique 1-move rearrangements are counted \citep{allen2001subtree}.
 However, we provide an explicit, verbose account that would be useful in assisting any investigators who need to program such routines for the first time. 
-We acknowledge that few may need to do this, however we follow \citet{goloboff1993character} in that knowledge of underlying routines helps to foster refinements and improvements of existing strategies that have a large user base. %TG: not sure about the "few needs to know" part. It's kind of auto-diminishing the impact of the paper. Maybe we can go with something like:
-%We believe that these explanation will help researchers using phylogenetic to better understand the underlying search routines \citep{goloboff1993character} and can foster refinement and improvement for implementing branch swapping strategies for tree inference or post-tree analysis \citep[e.g.][]{bordewich2005computational,goloboff2014bias,kuhner2015treComparison}.
+We acknowledge that few may need to do this, however we follow \citet{goloboff1993character} in that knowledge of underlying routines helps to foster refinements and improvements of existing strategies that have a large user base.
+%TG: not sure about the "few needs to know" part. It's kind of auto-diminishing the impact of the paper. We should proprably go with something more grandios!
 
 
 % %MB I'm really not sure this section is needed, but I'll leave it for now. It might be possible to fit it in.
-% %MB For now, it's mainly a digression from the main point: only unique 1-move swaps from a starting tree
+% %MB For now, it's mainly a digression from the main point: only unique 1-move rearrangements from a starting tree
 % Two main points need to be considered for the reliability of tree arrangement algorithms:
 % \begin{enumerate}
 %     \item First, when the tree search only visits some possible solutions this can create problems by having a higher probability of visiting a specific tree topology island since the probability of obtaining any topology by tree rearrangement will not be equal (some topologies might be more visited by chance).
@@ -189,82 +188,75 @@ We acknowledge that few may need to do this, however we follow \citet{goloboff19
 
 
 \section{SPR and TBR described in literature}
-The tree inference literature contains thorough and precise descriptions of both the algorithms \citep[e.g.][]{allen2001subtree,felsenstein2004inferring} and their caveats \citep[i.e speed and reliability - e.g.][]{morrison2007increasing,lakner2008efficiency,goloboff2014bias}.
-However, the \textit{implementation} of the algorithms is often overlooked.
-Here, we will review two common branch rearrangement algorithms (SPR and TBR) and propose a more practical and intuitive definition of the algorithms that we believe can help their implementation.
-It is important to note that the algorithms described here are mathematically equivalent to the ones described in \cite{allen2001subtree} and \cite{felsenstein2004inferring} and we thus do not claim priority or originality on this method that as certainly already be implemented in many softwares and was ``discovered'' empirically by many coders.
+The tree inference literature contains thorough and precise descriptions of both the SPR and TBR algorithms \citep[e.g.][]{allen2001subtree,felsenstein2004inferring} and their caveats \citep[i.e speed and reliability - e.g.][]{morrison2007increasing,lakner2008efficiency,goloboff2014bias}.
+However, the description of the \textit{implementation} of the algorithms is often overlooked.
+% Here, we will review these two tree rearrangement strategies and propose a more practical and intuitive definition of the algorithms that we believe can help their implementation.
+% It is important to note that the algorithms described here are mathematically equivalent to the ones described in \cite{allen2001subtree} and \cite{felsenstein2004inferring} and we thus do not claim priority or originality on this method that as certainly already be implemented in many softwares and was ``discovered'' empirically by many coders.
+% TG: is that bit not repeated in the paragraph above?
+The SPR method is commonly described as breaking a tree into to two subtrees and reinserting \textit{one} of these subtrees -- the source subtree %TG: I've standardised "tree" to "subtree" in the context of source/target subtrees.
+-- into all non-redundant positions on the other tree -- the target subtree (see \hyperref[Glossary]{Glossary}).
+In some explanations the target subtree is then reinserted into all available positions on the source subtree \citep[e.g.][Fig. 8.5]{swofford2003phylogeny}.
+However, if all possible subtrees are broken and reinserted (see \hyperref[Glossary]{Glossary}) %TG: standardised "breaking" to "breaking" and "reinserting" to "reinserting"
+ exactly according to the rules described, then they will always generate redundant trees (Fig. \ref{Figure_redundant}). 
+In many cases, branch breaking and reinserting would continue, long after the number of non-redundant topologies has been exhausted, wasting valuable computational time and biasing the tree search \citep{goloboff2014bias}.
 
-The subtree pruning and regrafting method is commonly described as breaking a tree into to two subtrees and reinserting \textit{one} of these subtrees -- the source tree -- into all non-redundant positions on the other tree (termed the target tree).
-In some explanations the target tree is then reinserted into all available positions on the source subtree \citep[e.g.][Fig. 8.5]{swofford2003phylogeny}.
-However, if all possible subtrees are clipped and reinserted exactly according to the rules described, then they will always generate redundant trees (Fig. \ref{Figure_redundant}).
-In many cases, branch breaking and swapping would continue, long after the number of non-redundant topologies has been exhausted, wasting valuable computational time and biasing the tree search.
-
-TBR differs from SPR in that the source subtree is reinserted before reconnection to the target tree.
-Thus TBR and SPR are seen to differ only in that rerooting of the subtree only takes place in TBR.
-All possible rerootings of the source subtree are attempted before the next clipping is made.
-Because the SPR is a strict subset of TBR moves on any given bifurcating tree, then the problem described here holds as well for TBR. %TG: Maybe add somewhere here that we will use SPR as a simpler example but all our claims can be scaled up to TBR?
+TBR differs from SPR in that the source subtree is rerooted before reconnection to the target subtree.
+Thus TBR can be seen as a generalisation of SPR where, in the latter, the source subtree is left rooted on the breaking point.
+All possible rerootings of the source subtree are attempted before the next breaking is made.
+Because the SPR is a strict subset of TBR moves on any given bifurcating tree, then the problem described here holds as well for TBR.
 In either case, it is clear that not all possible branch breaking and reinsertions need to be attempted.
 
-\section{The Target and Source Tree}
-What defines the target and source trees? 
-When a subtree is removed from a parent tree and reconnected to various points on the remaining subtree, they implicitly become source and target trees, respectively.
-However, with respect to avoiding redundant swaps, source and target are here redefined with respect to the order of clipping. 
+\section{The Target and source subtree}
+% What defines the target and source subtrees? 
+When a subtree is removed from a parent tree and reconnected to various points on the remaining subtree, they implicitly become source and target subtrees, respectively.
+However, with respect to avoiding redundant rearrangements, source and target are here redefined with respect to the order of breaking.
 
-% MDB: At this point, it comes clear to me that a glossary or box text might be a useful supplement to define some terms. Secondly, it will be good for us to settle on a few terms and standardise them across the MS. TG: I've started listing that below.
-Although not all clipping and reinsertion points need to be attempted, all possible non-unique moves do need to be tried. 
-Clipping (or the enumeration of possible clipping branchs) can be made by completing a tree traversal over the initial parent tree.
-However, because the parent trees are usually unrooted in practice, an arbitary starting point needs to be selected.
-For the purpose of this paper, we elect the node immediately adjacent to the first enumerated tip (usually tip ``A'').
-Thus, the trees are implicitly rooted by the traversal procedure.
-Clipping may proceed either in postorder or preorder, but in either case, the recursive traversal concludes at the node in which the traversal was initiated.
+% MDB: At this point, it comes clear to me that a glossary or box text might be a useful supplement to define some terms. Secondly, it will be good for us to settle on a few terms and standardise them across the MS.
+Although not all breaking and reinsertion points need to be attempted during a branch rearrangement, all possible non-unique moves do need to be tried to make the search properly heuristic. 
+The required breakings (or the enumeration of the possible breaking points) can be made bu completing a tree traversal over the initial parent tree (see \hyperref[Glossary]{Glossary}).
+In practice, because the parent trees are usually unrooted during the heuristic search, an arbitrary starting points needs to be selected.
+For the purpose of this paper, we elect the node immediately adjacent to the first enumerated tip (usually tip ``A'' or ``1'') thus making the trees implicitly rooted by the traversal procedure.
+Breaking may then proceed either in postorder or preorder %TG: do these needs to be explained?
+, but in either case, the recursive traversal concludes at the node in which the traversal was initiated.
 
-Because the tree is now implicitly rooted, we can define target and source trees for SPR and TBR with respect to this pattern.
-For the purposes of this paper, the target tree is the subtree that contains the starting point of the tree-clipping traversal.
-By extension, therefore, the source tree is the clipped subtree that does not contain the starting point.
+Because the tree is now implicitly rooted, we can properly define the target and source subtrees for SPR and TBR with respect to this pattern.
+For the purposes of this paper, the target subtree is the subtree that contains the starting point of the tree-breaking traversal.
+By extension, therefore, the source subtree is the broken subtree that does not contain the starting point.
 
-% MDB: I think this figure caption is likely to go or be changed? 
-% \begin{figure}[!htbp]
-% \centering
-%    \includegraphics[width=0.9\textwidth]{Figure/TBR.pdf}
-% \caption{Tree Bisection and Reconnection (TBR). Modified from \cite{felsenstein2004inferring}, Figure 4.6. \textbf{1}: the trees are split at a random edge and both subtrees are unrooted; \textbf{2}: the red arrow designates the edge where the red tree was previously connected and the black one designates the new rooting point on the red tree and its insertion on the black tree. Note that all the edges on the black tree (but the one with the red arrow) are potential reconnection points. \textbf{3}: the new topology obtained by one TBR rearrangement.}
-% \label{Figure_TBR}
-% \end{figure}
+%TG: Fair enough for the Glossary. Although if we decide to go for it properly, this section should be removed. It'll also make the reading flow much nicer: 1 - SPR TBR in litterature; 2 - what creates redundant swaps; 3 - our implementation to avoid it.
 
-\section{Patterns Generating Redundant Swaps}
-The most obvious case in which a clipping and reconnection procedure results in a redundant topology is the case of reinserting the clipped subtree to its original position.
-However, it is trivially easy to avoid these operations.
-Figure \ref{Figure_redundant} shows three different clipping and reconnection operations that will result in the same topology. 
-What they share in common is that they both result from reinserting the clipped subtree to a branch \textit{neighboring} the original clipping branch.
-
-This clips the tree at the smallest subtree that includes both clades. %MB: This is possibly coincidental, but possibly also work thinking about.
-Rerooting this clipped subtree on the branch subtending terminal ``C'' and reinserting it to the original clipping branch generates this same topology.
-Conversely, this can be seen as clippling the clade consisting of terminals ``A'' and ``B'' and reinserting that clade on its neighboring branch (the one subtending ``C'').
-
-We therefore now see three different branch-breaking operations to arrive at the same topology. 
-All of them arising from the clipping and moving of a branch to a neighbouring branch.
-In the next section we show how to employ the order of clipping so that only one of these swaps is made even when the same clipping event occurs.
+\section{Patterns Generating Redundant rearrangements}
+The most obvious case in which a breaking and reconnection procedure results in a redundant topology is the case of reinserting the source subtree to its original position on the target subtree.
+If avoiding this operation is trivial, figure \ref{Figure_redundant} shows three different breaking and reconnection operations that avoid the original reinsertion point but still result in the same topology. 
+From the figure, one can notice that one of their commonality is that all these reinsertions are done on the branch neighbouring the original position (see \hyperref[Glossary]{Glossary}).
+%This clips the tree at the smallest subtree that includes both clades. %MB: This is possibly coincidental, but possibly also work thinking about. TG: not sure I get you here?
+Rerooting any of these source subtrees on the branch subtending terminal ``C'' and reinserting it to the original breaking branch will also generate the same topology.
+Conversely, this can be seen as breaking the clade consisting of terminals ``A'' and ``B'' and reinserting that clade on its neighboring branch (the one subtending ``C'').
+%TG: not sure also what you meant in this part? Is this for illustrating another example (the same source trees rerooted on the branch to C?) or did you mean that it does the same on other neighbouring positions?
+All of these redundant rearrangements arose from the breaking and moving of the source subtree to a neighbouring branch of the breaking point on the target tree.
+In the next section we show how to employ the order of breaking so that only one of these rearrangements is made even when the same breaking event occurs.
 
 \begin{figure}[!htbp]
 \centering
-   \includegraphics[width=0.9\textwidth]{Figure/Figure_RedundantSwaps.pdf}
-\caption{Example of redundant swaps. Three independent clipping (clades ``(A,B)'', ``(G,F)'' and ``(E,D)'') and reconnections (orange doted line) leading to the same topology. The orange dots represents the clade's original position.}
+   \includegraphics[width=0.9\textwidth]{Figure/Figure_Redundantswaps.pdf}
+\caption{Example of redundant rearrangements. Three independent breaking (clades ``(A,B)'', ``(G,F)'' and ``(E,D)'') and reconnecting (orange doted line) leading to the same topology. The orange dots represents the clade's original position.}
 \label{Figure_redundant}
 \end{figure}
 
-\section{Avoiding Redundant Swaps}
-As illustrated in figure \ref{Figure_redundant} and detailed above, some clipping and reconnection moves that result in the same tree.
-To avoid redundant swaps, we thus only need to commit one of these moves at most once.
-All three of these involve clipping a subtree and moving it to a neighbouring branch. 
+\section{Avoiding Redundant rearrangements}
+As illustrated in figure \ref{Figure_redundant} and detailed above, some breaking and reconnection can result in the same tree topology.
+To avoid redundant rearrangements, we thus only need to commit one of these moves at most once.
+All three of these involve breaking a subtree and moving it to a neighbouring branch. 
 
-In SPR moves, when a branch is clipped, the source tree is reinserted everywhere except the original clipping branch \textit{and} any branches immediately adjacent to the original site. 
-In turn then, the target tree (containing the traversal starting point) is rejoined to the source tree at all possible points \textit{including} branches neighboring the original clipping branch.
+In SPR moves, when a branch is broken, the source subtree is reinserted everywhere except the original breaking branch \textit{and} any branches immediately adjacent to the original site. 
+In turn then, the target subtree (containing the traversal starting point) is rejoined to the source subtree at all possible points \textit{including} branches neighboring the original breaking branch.
 For TBR, exactly the same rule follows. 
-However, when the source tree is rerooted, it must be reinserted to the original clipping point on the target tree \textit{and} the branches adjacent to it (see Fig.\ref{Figure_Neighbor}).
+However, when the source subtree is rerooted, it must be reinserted to the original breaking point on the target subtree \textit{and} the branches adjacent to it (see Fig.\ref{Figure_Neighbor}).
 
 \begin{figure}[!htbp]
 \centering
    \includegraphics[width=0.7\textwidth]{Figure/Figure_Neighbour.pdf}
-\caption{Algorithm illustration for avoiding redundant swaps. If the starting point in the traversal is on the tip ``A'' (denoted by the orange arrow), the clade containing the entry point (e.g. ``(A,B)'') can be rebranched everywhere on the target tree (the black solid edges) apart from it's previous position (the orange doted line). Any other clades not containing the entry point (e.g. ``(F,G)'') can only be rebranched on edges not adjacent to the original position.}
+\caption{Algorithm illustration for avoiding redundant rearrangements. If the starting point in the traversal is on the tip ``A'' (denoted by the orange arrow), the clade containing the entry point (e.g. ``(A,B)'') can be rebranched everywhere on the target subtree (the black solid edges) apart from it's previous position (the orange doted line). Any other clades not containing the entry point (e.g. ``(F,G)'') can only be rebranched on edges not adjacent to the original position.}
 \label{Figure_Neighbor}
 \end{figure}
 
@@ -298,34 +290,38 @@ However, when the source tree is rerooted, it must be reinserted to the original
 % For example, one could first allow the algorithm to reroot the bissected tree randomly on each of it's edges, creating bolder rearrangements (i.e. exploring the overall tree space) and the constrict the algorithm to only reroot the tree on the edge closest to the bisection edge, creating ``finer grain'' search (i.e. exploring only the SPR island).
 
 
+\section{Glossary}
+\label{Glossary}
+% Standardisation: site becomes branch in the context of neighboring or breaking sites/branches.
+% Rearangements/Swap to be standardised?
+
+\begin{itemize}
+    \item{\textbf{breaking branch}: branch where the \textbf{Parent tree} is divided into the \textbf{target subtree} and the \textbf{source subtree}.}
+    \item{\textbf{Neighboring branches}: all branches that are connected by one node to the \textbf{breaking branch} (i.e. the branches directly adjacent to it).}
+    \item{\textbf{Parent tree}: the complete tree that undergoes branch rearrangement (i.e. the input tree).}
+    \item{\textbf{Reinsertion}: the branch where the \textbf{target subtree} is reinserted on the \textbf{source subtree}.}
+    \item{\textbf{source subtree}: the subtree issue from the \textbf{breaking} that does \textit{not} contains the \textbf{starting point}.}
+    \item{\textbf{Starting point}: the branch leading to the terminal where the post/pre-order traversal algorithm is initiated.}
+    \item{\textbf{target subtree}: the subtree issue from the \textbf{breaking} that \textit{does} contains the \textbf{starting point}.}
+    \item{\textbf{post/pre order traversal}: }
+\end{itemize}
+
+
 
 \section{Acknowledgments}
 European Research Council under the European Union’s Seventh Framework Programme (FP/2007–2013)/ERC Grant Agreement number 311092.
 
 
+
 \bibliographystyle{sysbio}
 \bibliography{References}
 
-\section{Glossary}
-% Standardisation: site becomes branch in the context of neighboring or clipping sites/branches.
-% Rearangements/Swap to be standardised?
-
-\begin{itemize}
-    \item{\textbf{Clipping branch}: branch where the \textbf{Parent tree} is divided into the \textbf{target subtree} and the \textbf{source subtree}.}
-    \item{\textbf{Neighboring branches}: all branches that are connected by one node to the \textbf{clipping branch} (i.e. the branches directly adjacent to it).}
-    \item{\textbf{Parent tree}: the complete tree that undergoes branch rearrangement (i.e. the input tree).}
-    \item{\textbf{Reinsertion}: the branch where the \textbf{target subtree} is reinserted on the \textbf{source subtree}.}
-    \item{\textbf{Source subtree}: the subtree issue from the \textbf{clipping} that does \textit{not} contains the \textbf{starting point}.}
-    \item{\textbf{Starting point}: the branch leading to the terminal where the post/pre-order traversal algorithm is initiated.}
-    \item{\textbf{Target subtree}: the subtree issue from the \textbf{clipping} that \textit{does} contains the \textbf{starting point}.}
-\end{itemize}
-
-% Original tree: the tree considered for branch swapping operation
-% Clipped tree: the sub-tree containing one to n-2 taxa removed from the original tree
-% Target tree: the tree that underwent a clipping operation and has now n-1 to n-(n-2) taxa. %TG: we could change that to a more obvious term
-% Clipping (to replace: prunning or bissection): removing a sub-tree containing one to n-2 taxa from a tree. The clipping results in obtaining two trees: the clipped tree and the target tree.
-% Regrafting/reconnecting: %TG: we should change that to a unique term (same way as clipping, I like reconnecting).
-% Swap: one clipping regrafting operation
+% Original tree: the tree considered for branch reinserting operation
+% broken tree: the sub-tree containing one to n-2 taxa removed from the original tree
+% target subtree: the tree that underwent a breaking operation and has now n-1 to n-(n-2) taxa. %TG: we could change that to a more obvious term
+% breaking (to replace: prunning or bissection): removing a sub-tree containing one to n-2 taxa from a tree. The breaking results in obtaining two trees: the broken tree and the target subtree.
+% Regrafting/reconnecting: %TG: we should change that to a unique term (same way as breaking, I like reconnecting).
+% Swap: one breaking regrafting operation
 % Neighbour edge: the edge adjacent to a selcted edge
 
 
