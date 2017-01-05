@@ -160,7 +160,7 @@ Although tree rearrangement strategies have been well studied in the literature,
 In fact, the explanations given for tree rearrangement algorithms (reviewed below) given in most popular texts and reviews will almost certainly result in redundant topologies within even the same round of branch reinserting.
 
 How then are redundant rearrangements avoided?
-In this review, we provide more precise explanations of the subtree pruning and regrafting (SPR) and tree-bisection and reconnection (TBR) rearrangement strategies that result only in unique tree topologies within a single round. 
+In this review, we provide more intuitive explanations of the subtree pruning and regrafting (SPR) and tree-bisection and reconnection (TBR) rearrangement strategies that result only in unique tree topologies within a single round.
 These explanations account for the order in which branches are broken as well as the pattern in which subtrees are reconnected to the target subtree.
 We do not claim credit for these methods; they, or something equivalent to them must already be implemented in existing phylogenetic software.
 Furthermore, they are implicit in some mathematical accounts of tree rearrangement processes in which the number of unique 1-move rearrangements are counted \citep{allen2001subtree}.
@@ -170,7 +170,11 @@ We acknowledge that few may need to do this, however we follow \citet{goloboff19
 
 
 % %MB I'm really not sure this section is needed, but I'll leave it for now. It might be possible to fit it in.
-% %MB For now, it's mainly a digression from the main point: only unique 1-move rearrangements from a starting tree
+% %MB For now, it's mainly a digression from the main point: only unique 1-move rearrangements from a starting tree. TG: I've move that where it could fit.
+
+\section{SPR and TBR described in literature}
+The tree inference literature contains thorough and precise descriptions of both the SPR and TBR algorithms \citep[e.g.][]{allen2001subtree,felsenstein2004inferring} and their caveats \citep[i.e speed and reliability - e.g.][]{morrison2007increasing,lakner2008efficiency,goloboff2014bias}.
+%TG: possible disgression:
 % Two main points need to be considered for the reliability of tree arrangement algorithms:
 % \begin{enumerate}
 %     \item First, when the tree search only visits some possible solutions this can create problems by having a higher probability of visiting a specific tree topology island since the probability of obtaining any topology by tree rearrangement will not be equal (some topologies might be more visited by chance).
@@ -180,21 +184,12 @@ We acknowledge that few may need to do this, however we follow \citet{goloboff19
 %     In fact, to avoid any statistical bias, the visiting order should be strictly random \citep{goloboff2014bias} although, in practice, and for algorithm speed reasons, this is rarely the case (e.g. using post/pre-order traversals [CITE]).
 %     This as been shown to introduce several biases in theoretical examples \citep{goloboff2014bias} although, to our knowledge, has not been demonstrated empirically.
 % \end{enumerate}
-
-% %MB We therefore need some good algorithms.
-% %MB Boring! (Not that what follows is terribly exciting) This isn't a paper about needing good algorithms, it's a paper about how to implement some good algorithms correctly (or efficiently?). %TG: agree
-% Also the way the trees are visited (see point 2 above) modifies the efficiency of these algorithms.
-% For example, \cite{lakner2008efficiency} found, for Bayesian inference, that SPR (when sampled randomly) was more efficient than TBR (when sampled non-randomly) which was in turn more efficient than SPR (when sampled non-randomly).
-
-
-\section{SPR and TBR described in literature}
-The tree inference literature contains thorough and precise descriptions of both the SPR and TBR algorithms \citep[e.g.][]{allen2001subtree,felsenstein2004inferring} and their caveats \citep[i.e speed and reliability - e.g.][]{morrison2007increasing,lakner2008efficiency,goloboff2014bias}.
 However, the description of the \textit{implementation} of the algorithms is often overlooked.
 % Here, we will review these two tree rearrangement strategies and propose a more practical and intuitive definition of the algorithms that we believe can help their implementation.
 % It is important to note that the algorithms described here are mathematically equivalent to the ones described in \cite{allen2001subtree} and \cite{felsenstein2004inferring} and we thus do not claim priority or originality on this method that as certainly already be implemented in many softwares and was ``discovered'' empirically by many coders.
 % TG: is that bit not repeated in the paragraph above?
-The SPR method is commonly described as breaking a tree into to two subtrees and reinserting \textit{one} of these subtrees -- the source subtree %TG: I've standardised "tree" to "subtree" in the context of source/target subtrees.
--- into all non-redundant positions on the other tree -- the target subtree (see \hyperref[Glossary]{Glossary}).
+The SPR method is commonly described as breaking a tree into to two subtrees and reinserting one of these subtrees -- the source subtree %TG: I've standardised "tree" to "subtree" in the context of source/target subtrees.
+-- into all non-redundant positions on the other subtree -- the target subtree (see \hyperref[Glossary]{Glossary}).
 In some explanations the target subtree is then reinserted into all available positions on the source subtree \citep[e.g.][Fig. 8.5]{swofford2003phylogeny}.
 However, if all possible subtrees are broken and reinserted (see \hyperref[Glossary]{Glossary}) %TG: standardised "breaking" to "breaking" and "reinserting" to "reinserting"
  exactly according to the rules described, then they will always generate redundant trees (Fig. \ref{Figure_redundant}). 
@@ -202,28 +197,11 @@ In many cases, branch breaking and reinserting would continue, long after the nu
 
 TBR differs from SPR in that the source subtree is rerooted before reconnection to the target subtree.
 Thus TBR can be seen as a generalisation of SPR where, in the latter, the source subtree is left rooted on the breaking point.
-All possible rerootings of the source subtree are attempted before the next breaking is made.
+All possible rerooting of the source subtree are attempted before the next breaking is made.
 Because the SPR is a strict subset of TBR moves on any given bifurcating tree, then the problem described here holds as well for TBR.
 In either case, it is clear that not all possible branch breaking and reinsertions need to be attempted.
 
-\section{The Target and source subtree}
-% What defines the target and source subtrees? 
-When a subtree is removed from a parent tree and reconnected to various points on the remaining subtree, they implicitly become source and target subtrees, respectively.
-However, with respect to avoiding redundant rearrangements, source and target are here redefined with respect to the order of breaking.
-
-% MDB: At this point, it comes clear to me that a glossary or box text might be a useful supplement to define some terms. Secondly, it will be good for us to settle on a few terms and standardise them across the MS.
-Although not all breaking and reinsertion points need to be attempted during a branch rearrangement, all possible non-unique moves do need to be tried to make the search properly heuristic. 
-The required breakings (or the enumeration of the possible breaking points) can be made bu completing a tree traversal over the initial parent tree (see \hyperref[Glossary]{Glossary}).
-In practice, because the parent trees are usually unrooted during the heuristic search, an arbitrary starting points needs to be selected.
-For the purpose of this paper, we elect the node immediately adjacent to the first enumerated tip (usually tip ``A'' or ``1'') thus making the trees implicitly rooted by the traversal procedure.
-Breaking may then proceed either in postorder or preorder %TG: do these needs to be explained?
-, but in either case, the recursive traversal concludes at the node in which the traversal was initiated.
-
-Because the tree is now implicitly rooted, we can properly define the target and source subtrees for SPR and TBR with respect to this pattern.
-For the purposes of this paper, the target subtree is the subtree that contains the starting point of the tree-breaking traversal.
-By extension, therefore, the source subtree is the broken subtree that does not contain the starting point.
-
-%TG: Fair enough for the Glossary. Although if we decide to go for it properly, this section should be removed. It'll also make the reading flow much nicer: 1 - SPR TBR in litterature; 2 - what creates redundant swaps; 3 - our implementation to avoid it.
+% \section{The Target and source subtree} TG: I've moved that in the glossary
 
 \section{Patterns Generating Redundant rearrangements}
 The most obvious case in which a breaking and reconnection procedure results in a redundant topology is the case of reinserting the source subtree to its original position on the target subtree.
@@ -244,14 +222,12 @@ In the next section we show how to employ the order of breaking so that only one
 \end{figure}
 
 \section{Avoiding Redundant rearrangements}
-As illustrated in figure \ref{Figure_redundant} and detailed above, some breaking and reconnection can result in the same tree topology.
-To avoid redundant rearrangements, we thus only need to commit one of these moves at most once.
-All three of these involve breaking a subtree and moving it to a neighbouring branch. 
+As described above and illustrated in figure \ref{Figure_redundant}, some breaking and reconnection can result in the same tree topology if the reconnection is done in the neighbouring branches of the insertion point.
+To avoid these redundant rearrangements, we thus only need to commit one of these moves at most once.
 
-In SPR moves, when a branch is broken, the source subtree is reinserted everywhere except the original breaking branch \textit{and} any branches immediately adjacent to the original site. 
-In turn then, the target subtree (containing the traversal starting point) is rejoined to the source subtree at all possible points \textit{including} branches neighboring the original breaking branch.
-For TBR, exactly the same rule follows. 
-However, when the source subtree is rerooted, it must be reinserted to the original breaking point on the target subtree \textit{and} the branches adjacent to it (see Fig.\ref{Figure_Neighbor}).
+In SPR moves, when a branch is broken, the source subtree is reinserted everywhere except on the original breaking branch \textit{and} any branches immediately adjacent to the original site. 
+In turn then, the target subtree (containing the traversal starting point) is reconnected to the source subtree at all possible points \textit{including} branches neighbouring the original breaking branch.
+This rule can be also applied to the TBR algorithm, however, when the source subtree is rerooted, it must be reinserted to the original breaking point on the target subtree \textit{and} the branches adjacent to it (see Fig.\ref{Figure_Neighbor}).
 
 \begin{figure}[!htbp]
 \centering
@@ -305,6 +281,23 @@ However, when the source subtree is rerooted, it must be reinserted to the origi
     \item{\textbf{target subtree}: the subtree issue from the \textbf{breaking} that \textit{does} contains the \textbf{starting point}.}
     \item{\textbf{post/pre order traversal}: }
 \end{itemize}
+
+\subsection{The source and target subtrees}
+% MDB: At this point, it comes clear to me that a glossary or box text might be a useful supplement to define some terms. Secondly, it will be good for us to settle on a few terms and standardise them across the MS.
+Although not all breaking and reinsertion points need to be attempted during a branch rearrangement, all possible non-unique moves do need to be tried to make the search properly heuristic. 
+The required breakings (or the enumeration of the possible breaking points) can be made bu completing a tree traversal over the initial parent tree (see \hyperref[Glossary]{Glossary}).
+In practice, because the parent trees are usually unrooted during the heuristic search, an arbitrary starting points needs to be selected.
+For the purpose of this paper, we elect the node immediately adjacent to the first enumerated tip (usually tip ``A'' or ``1'') thus making the trees implicitly rooted by the traversal procedure.
+Breaking may then proceed either in postorder or preorder %TG: do these needs to be explained?
+, but in either case, the recursive traversal concludes at the node in which the traversal was initiated.
+
+Because the tree is now implicitly rooted, we can properly define the target and source subtrees for SPR and TBR with respect to this pattern.
+For the purposes of this paper, the target subtree is the subtree that contains the starting point of the tree-breaking traversal.
+By extension, therefore, the source subtree is the broken subtree that does not contain the starting point.
+
+%TG: Fair enough for the Glossary. Although if we decide to go for it properly, this section should be removed. It'll also make the reading flow much nicer: 1 - SPR TBR in litterature; 2 - what creates redundant swaps; 3 - our implementation to avoid it.
+
+
 
 
 
