@@ -67,18 +67,20 @@
 
 \begin{document}
 
+% To be submitted to MEE as a Mini-review (http://www.methodsinecologyandevolution.org/view/0/authorGuidelines.html)
+
 %Running head
 \begin{flushright}
 Version dated: \today
 \end{flushright}
 \bigskip
-\noindent RH: Branch swapping algorithm
+\noindent RH: Avoiding redundant tree rearrangements
 
 \bigskip
 \medskip
 \begin{center}
 
-\noindent{\Large \bf Tree rearrangements rearranged} %TG: I'm bad at puns.
+\noindent{\Large \bf A simple rule for avoiding redundant topologies during tree rearrangement procedures} 
 \bigskip
 
 \noindent {\normalsize \sc Thomas Guillerme$^1$$^*$, and Martin D. Brazeau$^1$}\\ %TG: Author order can be swapped of course! There's only a finite combination of 2 elements anyway!
@@ -87,6 +89,8 @@ $^1$Imperial College London, Silwood Park Campus, Department of Life Sciences, B
 \end{center}
 \medskip
 \noindent{*\bf Corresponding author.} \textit{t.guillerme@imperial.ac.uk}\\  %TG: Same as above
+\medskip
+Word count: @@@
 \vspace{1in}
 
 %Line numbering
@@ -100,43 +104,20 @@ $^1$Imperial College London, Silwood Park Campus, Department of Life Sciences, B
 %---------------------------------------------
 
 \newpage
-\begin{abstract}
-blablabla
-\end{abstract}
+% \begin{abstract}
+\section{Abstract}
+\begin{enumerate}
+    \item Tree rearrangement methods are central to evolutionary biology, whether used during or after phylogenetic inference. They are well described in the literature both in terms of algorithm descriptions and caveats studies. However, following these instructions generates redundant rearrangements. %Point 1: set the context and purpose for the work;
+    \item In this review, we propose an approach that allows to perform the most used tree rearrangement methods (SPR/TBR) without obtaining redundant trees.%Point 2: indicate the approach and methods used;
+    \item Although this method is probably already implemented in phylogenetic software, this is the first paper to propose a simple and easily implementable solution that could be used by software engineers in the future. %Point 4: identify the conclusions, the wider implications and the relevance to management or policy. 
+\end{enumerate}
+% \end{abstract}
 
-\noindent (Keywords: )\\
+\noindent (Keywords: Subtree Pruning and Regrafting, Tree Bisection and Reconnection, Heuristic search algorithm, tree topology)\\
 
 \vspace{1.5in}
 
 \newpage 
-
-
-%---------------------------------------------
-% LaTeX tips for modifying/editing the document:
-%---------------------------------------------
-% - You can comment using the percentage sign. I suggest you use the % sign alone for commenting out sections of the text:
-%       e.g. "This is a really long sentence %because this sentence is very long." Here the % is used for ignoring the end of the sentence (but for some reason you want to keep track of it).%
-%       For comments as in verbose comments, I suggest you use "%MB:":
-%       e.g. "This is a really long sentence %because this sentence is very long. %MB: yeah, no shit!" 
-% - For optimal version control, write only one sentence per line (for more precise track changes)
-% - To build the pdf, use command+B in Sublime.
-% - Because of the bibliography, the pdf needs to be build in the same folder that contains "References.bib" and "sysbio.bst"
-% - For citing papers, you must put their bibtex reference in the "References.bib" file and then you can use the following sysbio tags:
-%        \cite{bibtexBob2000} for citing within a sentence: "Bob (2000)"
-%        \citep{bibtexBob2000} for citing within brackets: "(Bob, 2000)"
-%        \citep[Before:][-After]{bibtexBob2000} for citing within brackets with additional text: "(Before: Bob, 2000 -After)"
-%        \citealt{bibtexBob2000} for citing without brackets: "Bob, 2000"
-%        You can put more cites in each \cite tag by separating them with commas.
-% - For equation, find every details here: https://en.wikibooks.org/wiki/LaTeX/Mathematics
-% - For titles and stuff, the hierarchy goes \section{}, \subsection{}, \subsubsection{} and so forth...
-% - For bullet points or enumerations you can use:
-%       \begin{itemize}
-%           \item my first bullet point/enumeration
-%       \end{itemize}
-%       With replacing "itemize" by "enumerate" for enumeration.
-
-
-
 
 %---------------------------------------------
 %
@@ -188,12 +169,12 @@ However, the description of the \textit{implementation} of the algorithms is oft
 % Here, we will review these two tree rearrangement strategies and propose a more practical and intuitive definition of the algorithms that we believe can help their implementation.
 % It is important to note that the algorithms described here are mathematically equivalent to the ones described in \cite{allen2001subtree} and \cite{felsenstein2004inferring} and we thus do not claim priority or originality on this method that as certainly already be implemented in many softwares and was ``discovered'' empirically by many coders.
 % TG: is that bit not repeated in the paragraph above?
-The SPR method is commonly described as breaking a tree into to two subtrees and reinserting one of these subtrees -- the source subtree %TG: I've standardised "tree" to "subtree" in the context of source/target subtrees.
+The SPR method is commonly described as breaking a tree into to two subtrees and reinserting one of these subtrees -- the source subtree see \hyperref[Glossary]{Glossary}%TG: I've standardised "tree" to "subtree" in the context of source/target subtrees.
 -- into all non-redundant positions on the other subtree -- the target subtree (see \hyperref[Glossary]{Glossary}).
 In some explanations the target subtree is then reinserted into all available positions on the source subtree \citep[e.g.][Fig. 8.5]{swofford2003phylogeny}.
 However, if all possible subtrees are broken and reinserted (see \hyperref[Glossary]{Glossary}) %TG: standardised "breaking" to "breaking" and "reinserting" to "reinserting"
  exactly according to the rules described, then they will always generate redundant trees (Fig. \ref{Figure_redundant}). 
-In many cases, branch breaking and reinserting would continue, long after the number of non-redundant topologies has been exhausted, wasting valuable computational time and biasing the tree search \citep{goloboff2014bias}.
+In many cases, branch breaking and reinsertion would continue, long after the number of non-redundant topologies has been exhausted, wasting valuable computational time and biasing the tree search \citep{goloboff2014bias}.
 
 TBR differs from SPR in that the source subtree is rerooted before reconnection to the target subtree.
 Thus TBR can be seen as a generalisation of SPR where, in the latter, the source subtree is left rooted on the breaking point.
@@ -217,13 +198,13 @@ In the next section we show how to employ the order of breaking so that only one
 \begin{figure}[!htbp]
 \centering
    \includegraphics[width=0.9\textwidth]{Figure/Figure_Redundantswaps.pdf}
-\caption{Example of redundant rearrangements. Three independent breaking (clades ``(A,B)'', ``(G,F)'' and ``(E,D)'') and reconnecting (orange doted line) leading to the same topology. The orange dots represents the clade's original position.}
+\caption{Example of redundant rearrangements. Three independent breaks (clades ``(A,B)'', ``(G,F)'' and ``(E,D)'') and reconnection (orange doted line) leading to the same topology. The big orange dots represents the clade's original position.}
 \label{Figure_redundant}
 \end{figure}
 
 \section{Avoiding Redundant rearrangements}
 As described above and illustrated in figure \ref{Figure_redundant}, some breaking and reconnection can result in the same tree topology if the reconnection is done in the neighbouring branches of the insertion point.
-To avoid these redundant rearrangements, we thus only need to commit one of these moves at most once.
+To avoid these redundant rearrangements, we thus only need to commit one of these moves once.
 
 In SPR moves, when a branch is broken, the source subtree is reinserted everywhere except on the original breaking branch \textit{and} any branches immediately adjacent to the original site. 
 In turn then, the target subtree (containing the traversal starting point) is reconnected to the source subtree at all possible points \textit{including} branches neighbouring the original breaking branch.
@@ -232,9 +213,38 @@ This rule can be also applied to the TBR algorithm, however, when the source sub
 \begin{figure}[!htbp]
 \centering
    \includegraphics[width=0.7\textwidth]{Figure/Figure_Neighbour.pdf}
-\caption{Algorithm illustration for avoiding redundant rearrangements. If the starting point in the traversal is on the tip ``A'' (denoted by the orange arrow), the clade containing the entry point (e.g. ``(A,B)'') can be rebranched everywhere on the target subtree (the black solid edges) apart from it's previous position (the orange doted line). Any other clades not containing the entry point (e.g. ``(F,G)'') can only be rebranched on edges not adjacent to the original position.}
+\caption{Algorithm illustrating how to avoid redundant rearrangements. If the starting point in the traversal is on the tip ``A'' (denoted by the orange arrow), the clade containing the entry point (e.g. ``(A,B)'') can be rebranched everywhere on the target subtree (the black solid edges) apart from it's previous position (the orange doted line). Any other clades not containing the entry point (e.g. ``(F,G)'') can only be rebranched on edges not adjacent to the original position.}
 \label{Figure_Neighbor}
 \end{figure}
+
+Using this simple rule during any tree rearrangement algorithm using the SPR or/and TBR routines allow to properly explore the tree space \citep[i.e. the correct number of topologies are visited, following][]{allen2001subtree} without any redundant tree rearrangement.
+
+% TG: actually need to check that.
+% number of splits = 2n-3
+% number of reinsertions = 2n−4
+
+% number of reinsertions = 2n-4-5 (5 is )
+
+% operation 3 = 4(n−3)(n−4)
+% (4n-12)*(4n-16)
+
+% 4n^2-64n-48n-192
+% 4n^2-16n-192
+
+
+% NNI rearrangements: 2(n-3)
+
+% 2(n-3) + 4(n−3)(n−4)
+
+% Result = 2(n−3)(2n−7)
+% (2n-6)*(4n-14)
+
+
+% One major concern in phylogenetic inference, during the tree search phase is to evenly (or at worst, randomly) sample the tree space but without spending to much time sampling all possible topologies.
+% This allows to identify the different topology islands where the tree search must be focused in order to find the optimal topology.
+% One solution to achieve this it to shift between tree rearrangement algorithms during the tree search: first, using an algorithm allowing bold tree rearrangements to explore the overall tree space and then a more conservative one to do a ``fine grain'' search in local optima \citep{lakner2008efficiency}.
+% This joint SPR-TBR implementation could easily allow such tree rearrangement shifts by switching between the different restriction rules without implementing different algorithms.
+% For example, one could first allow the algorithm to reroot the bissected tree randomly on each of it's edges, creating bolder rearrangements (i.e. exploring the overall tree space) and the constrict the algorithm to only reroot the tree on the edge closest to the bisection edge, creating ``finer grain'' search (i.e. exploring only the SPR island).
 
 
 % % Dunno if we'll keep the stuff below ##################
