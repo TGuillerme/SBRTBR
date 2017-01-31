@@ -1,0 +1,32 @@
+\documentclass[11pt]{letter}
+\usepackage[a4paper,left=2.5cm, right=2.5cm, top=1cm, bottom=1cm]{geometry}
+\usepackage[osf]{mathpazo}
+\signature{Thomas Guillerme \\Martin Brazeau}
+\address{Imperial College London \\Silwood Park Campus \\Buckhurst Road \\Ascot SL57PY, United Kingdom \\guillert@tcd.ie}
+\longindentation=0pt
+\begin{document}
+
+\begin{letter}{}
+\opening{Dear Editors,}
+
+Phylogenetic, as one of the central disciplines in evolutionary sciences heavily relies on tree rearrangement algorithm in order to provide the best topology according to some phylogenetic method (Bayesian, Maximum Parsimony, Maximum likelihood, etc.).
+The classic phylogenetic literature is rich with descriptions of such algorithms (e.g. \textit{Inferring phylogenies}, Felsenstein 2004) as well as their caveats (Goloboff \& Simmons, 2014, \textit{Syst. Biol.}).
+One of the main caveats, described in the aforementioned publication is the problems rising when tree rearrangements generates identical topologies.
+This does both bias the tree search and increase the computational time; two problems that are of major concern in tree inference. 
+Although already mathematically assessed since more than a decade (Allen \& Steel, 2001, \textit{J. of Combinatorics}), there is, to our knowledge, no clear explanation on how to avoid this problem in the present literature.
+
+In this mini-review, entitled ``A simple rule for avoiding redundant topologies during tree rearrangement procedures'', we propose and illustrate simple method for avoiding creating redundant topologies during Subtree-Pruning and Regrafting (SPR) and Tree Bisection and Reconnection (TBR) procedures, two of the most popular tree rearrangement methods.
+This implementation proposes that, during a pruning/bisection procedure, the obtained subtree should not be regrafted/reconnected to the edges adjacent to the edge from where the subtree originated.
+Applying this rule allows to easily visit all possible topologies possible from one tree rearrangement method without generating redundant topologies.
+We do not claim credit for this implementation \textit{per se} since many programmers coding phylogenetic software must have discovered it independently but we believe that the present mini-review will be of great use for future researchers willing to implement tree rearrangement algorithms, whether for phylogenetic inference software or any other software using such methods for exploring tree spaces.
+
+We look forward to hearing from you soon,
+
+\closing{Yours sincerely,}
+
+\end{letter}
+\end{document}
+
+%% Suggested reviewers
+
+
