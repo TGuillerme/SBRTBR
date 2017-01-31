@@ -128,7 +128,7 @@ Word count: @@@
 
 % Tree rearrangement is paramount
 Phylogenetic tree inference methods are confronted with the combinatoric problem of unmanageable large numbers of tree solutions arising from increasing numbers of terminals \citep{Felsenstein:1978vh}.
-To address this problem, heuristic solutions involving tree rearrangements allows exploration of restricted parts of the ``tree space'' close to target solutions.
+To address this problem, heuristic solutions involving tree rearrangements allows exploration of restricted parts of the ``tree space'' close to target solutions \cite{john2016review}.
 This greatly accelerates phylogenetic analysis by ignoring topologies that are unlikely to be optimal.
 In addition to their use in phylogenetic tree search process itself, tree rearrangement strategies are employed in some post-search tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or methods for detecting horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational}.
 
@@ -202,6 +202,13 @@ In the next section we show how to employ the order of breaking so that only one
 \label{Figure_redundant}
 \end{figure}
 
+%TG: Still not sure where to put this paragraph
+Although not all breaking and reinsertion points need to be attempted during a branch rearrangement, all possible non-unique moves do need to be tried to make the search properly heuristic. 
+The required breakings (or the enumeration of the possible breaking points) can be made by completing a tree traversal over the initial parent tree (see \hyperref[Glossary]{Glossary}).
+In practice, because the parent trees are usually unrooted during the heuristic search, an arbitrary starting points needs to be selected.
+For the purpose of this paper, we elect the node immediately adjacent to the first enumerated tip (usually tip ``A'' or ``1'') thus making the trees implicitly rooted by the traversal procedure.
+Breaking may then proceed either in postorder or preorder, but in either case, the recursive traversal concludes at the node in which the traversal was initiated.
+
 \section{Avoiding Redundant rearrangements}
 As described above and illustrated in figure \ref{Figure_redundant}, some breaking and reconnection can result in the same tree topology if the reconnection is done in the neighbouring branches of the insertion point.
 To avoid these redundant rearrangements, we thus only need to commit one of these moves once.
@@ -216,6 +223,7 @@ This rule can be also applied to the TBR algorithm, however, when the source sub
 \caption{Algorithm illustrating how to avoid redundant rearrangements. If the starting point in the traversal is on the tip ``A'' (denoted by the orange arrow), the clade containing the entry point (e.g. ``(A,B)'') can be rebranched everywhere on the target subtree (the black solid edges) apart from it's previous position (the orange doted line). Any other clades not containing the entry point (e.g. ``(F,G)'') can only be rebranched on edges not adjacent to the original position.}
 \label{Figure_Neighbor}
 \end{figure}
+
 
 Using this simple rule during any tree rearrangement algorithm using the SPR or/and TBR routines allow to properly explore the tree space \citep[i.e. the correct number of topologies are visited, following][]{allen2001subtree} without any redundant tree rearrangement.
 
@@ -263,8 +271,6 @@ Using this simple rule during any tree rearrangement algorithm using the SPR or/
 % % \label{Figure_TBR_modif}
 % % \end{figure}
 
-
-
 % We believe that such consideration of the SPR algorithm as a constrained TBR highly facilitates both algorithm's implementation.
 % In fact, in this case only one algorithm needs to be implemented with one mandatory restricting rules (no reconnection on the bisection edge and it's neighbours) and an optional restriction that can be activate or not to create either TBR or SPR (respectively rerooting on any edge or only on the bisection one).
 % This approach is not different than the classic SPR and TBR algorithms described in the literature \citep{allen2001subtree,felsenstein2004inferring} but proposes an easier implementation.
@@ -292,40 +298,12 @@ Using this simple rule during any tree rearrangement algorithm using the SPR or/
     \item{\textbf{post/pre order traversal}: }
 \end{itemize}
 
-\subsection{The source and target subtrees}
-% MDB: At this point, it comes clear to me that a glossary or box text might be a useful supplement to define some terms. Secondly, it will be good for us to settle on a few terms and standardise them across the MS.
-Although not all breaking and reinsertion points need to be attempted during a branch rearrangement, all possible non-unique moves do need to be tried to make the search properly heuristic. 
-The required breakings (or the enumeration of the possible breaking points) can be made bu completing a tree traversal over the initial parent tree (see \hyperref[Glossary]{Glossary}).
-In practice, because the parent trees are usually unrooted during the heuristic search, an arbitrary starting points needs to be selected.
-For the purpose of this paper, we elect the node immediately adjacent to the first enumerated tip (usually tip ``A'' or ``1'') thus making the trees implicitly rooted by the traversal procedure.
-Breaking may then proceed either in postorder or preorder %TG: do these needs to be explained?
-, but in either case, the recursive traversal concludes at the node in which the traversal was initiated.
-
-Because the tree is now implicitly rooted, we can properly define the target and source subtrees for SPR and TBR with respect to this pattern.
-For the purposes of this paper, the target subtree is the subtree that contains the starting point of the tree-breaking traversal.
-By extension, therefore, the source subtree is the broken subtree that does not contain the starting point.
-
-%TG: Fair enough for the Glossary. Although if we decide to go for it properly, this section should be removed. It'll also make the reading flow much nicer: 1 - SPR TBR in litterature; 2 - what creates redundant swaps; 3 - our implementation to avoid it.
-
-
-
-
-
 \section{Acknowledgments}
 European Research Council under the European Union’s Seventh Framework Programme (FP/2007–2013)/ERC Grant Agreement number 311092.
-
-
 
 \bibliographystyle{sysbio}
 \bibliography{References}
 
-% Original tree: the tree considered for branch reinserting operation
-% broken tree: the sub-tree containing one to n-2 taxa removed from the original tree
-% target subtree: the tree that underwent a breaking operation and has now n-1 to n-(n-2) taxa. %TG: we could change that to a more obvious term
-% breaking (to replace: prunning or bissection): removing a sub-tree containing one to n-2 taxa from a tree. The breaking results in obtaining two trees: the broken tree and the target subtree.
-% Regrafting/reconnecting: %TG: we should change that to a unique term (same way as breaking, I like reconnecting).
-% Swap: one breaking regrafting operation
-% Neighbour edge: the edge adjacent to a selcted edge
 
 
 
