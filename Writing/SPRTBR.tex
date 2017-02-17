@@ -107,7 +107,7 @@ Word count: 1213
 % \begin{abstract}
 \section{Abstract}
 \begin{enumerate}
-    \item Tree rearrangement methods are central to evolutionary biology, whether used during or after phylogenetic inference. They are well described in the literature both in terms of algorithm descriptions and caveats studies. However, following these instructions generates redundant rearrangements inducing statistical caveats and costing precious computational time.
+    \item Tree rearrangement methods are central to phylogenetic analyses, whether used during or after the initial tree search. They are well described in the literature both in terms of algorithm descriptions and caveats studies. However, following these instructions generates redundant rearrangements inducing statistical caveats and costing precious computational time.
     \item In this review, we propose an approach that allows to perform the most used tree rearrangement methods (SPR/TBR) without obtaining redundant trees by avoiding reconnecting subtrees on any edges adjacent to their original position.
     \item Although this method is probably already implemented in phylogenetic software, this paper proposes a simple and easily implementable solution that could be used by software engineers in the future, whether for tree inference methods or any post-inference analysis requiring tree rearrangements.
 \end{enumerate}
@@ -127,17 +127,18 @@ Word count: 1213
 \section{Introduction}
 
 % Tree rearrangement is paramount
-Phylogenetic tree inference methods are confronted with the combinatoric problem of unmanageable large numbers of tree solutions arising from increasing numbers of terminals \citep{Felsenstein:1978vh}.
-To address this problem, heuristic solutions involving tree rearrangements allows exploration of restricted parts of the ``tree space'' close to target solutions \citep{john2016review}.
+Phylogenetic tree inference methods are confronted with the combinatoric problem of searching a vast space of tree topologies. 
+The number of possible topologies rises exponentially with the number of terminals, and thus it is usually impossible to check all possible solutions in a reasonable amount of time \citep{Felsenstein:1978vh}.
+To address this problem, heuristic solutions involving tree rearrangements allows efficient exploration of restricted parts of the ``tree space'' close to target solutions \citep{john2016review}.
 This greatly accelerates phylogenetic analysis by ignoring topologies that are unlikely to be optimal.
-In addition to their use in phylogenetic tree search process itself, tree rearrangement strategies are employed in some post-search tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or methods for detecting horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational}.
+In addition to their use in the phylogenetic tree search process itself, tree rearrangement strategies are employed in some post-search tasks such as tree comparisons \citep[e.g.][]{allen2001subtree,kuhner2015treComparison}, node support estimation \citep[e.g.][]{goloboff2014bias} or methods for detecting horizontal genes transfer \citep[e.g.][]{mcfadden1995something,bordewich2005computational}.
 
 Recently, \citet{goloboff2014bias} examined biases in tree searches arising from heuristic methods, noting in particular how these biases can influence support statistics including bootstrap values and posterior probabilities arising from Bayesian inference.
 They note that the biases are amplified if tree rearrangement %TG: I've standardised "branch-reinserting" to "tree rearrangement" for consistency
 procedures do not take care to avoid redundant rearrangements. %TG: I've standardised "swaps" to "rearrangement" for consistency
-Additionally, because tree rearrangement strategies are at the base of any phylogenetic studies, their speed and efficiency are of critical importance.
-Considerable time should be saved by not visiting topologies that have already been analysed.
-Although tree rearrangement strategies have been well studied in the literature, the question of how redundant rearrangements are avoided may not be immediately obvious from the explanations given in most texts \citep{swofford2003phylogeny,felsenstein2004inferring,wiley2011phylogenetics}.
+Additionally, because tree rearrangement strategies are essential for most modern phylogenetic datasets, their speed and efficiency are of critical importance.
+Considerable time is saved by not visiting topologies that have already been analysed.
+Although tree rearrangement strategies have been extensively presented in the literature, the question of how redundant rearrangements are avoided may not be immediately obvious from the explanations given in most texts \citep{swofford2003phylogeny,felsenstein2004inferring,wiley2011phylogenetics}.
 In fact, the explanations given for tree rearrangement algorithms (reviewed below) given in most popular texts and reviews will almost certainly result in redundant topologies within even the same round of branch reinserting.
 
 How then are redundant rearrangements avoided?
@@ -146,7 +147,7 @@ These explanations account for the order in which branches are broken as well as
 We do not claim credit for these methods; they, or something equivalent to them must already be implemented in existing phylogenetic software.
 Furthermore, they are implicit in some mathematical accounts of tree rearrangement processes in which the number of unique 1-move rearrangements are counted \citep{allen2001subtree}.
 However, we provide an explicit, verbose account that would be useful in assisting any investigators who need to program such routines for the first time. 
-We acknowledge that few may need to do this, however we follow \citet{goloboff1993character} in that knowledge of underlying routines helps to foster refinements and improvements of existing strategies that have a large user base.
+We therefore follow \citet{goloboff1993character} in that knowledge of underlying routines helps to foster refinements and improvements of existing strategies that have a large user base.
 %TG: not sure about the "few needs to know" part. It's kind of auto-diminishing the impact of the paper. We should proprably go with something more grandios!
 
 
@@ -174,7 +175,7 @@ The SPR method is commonly described as breaking a tree into to two subtrees and
 In some explanations the target subtree is then reinserted into all available positions on the source subtree \citep[e.g.][Fig. 8.5]{swofford2003phylogeny}.
 However, if all possible subtrees are broken and reinserted (see \hyperref[Glossary]{Glossary}) %TG: standardised "breaking" to "breaking" and "reinserting" to "reinserting"
  exactly according to the rules described, then they will always generate redundant trees (Fig. \ref{Figure_redundant}). 
-In many cases, branch breaking and reinsertion would continue, long after the number of non-redundant topologies has been exhausted, wasting valuable computational time and biasing the tree search \citep{goloboff2014bias}.
+Following these same descriptions without modification, branch breaking and reinsertion would continue for many trees, long after the number of non-redundant topologies has been exhausted, wasting valuable computational time and biasing the tree search \citep{goloboff2014bias}.
 
 TBR differs from SPR in that the source subtree is rerooted before reconnection to the target subtree.
 Thus TBR can be seen as a generalisation of SPR where, in the latter, the source subtree is left rooted on the breaking point.
@@ -186,14 +187,16 @@ In either case, it is clear that not all possible branch breaking and reinsertio
 
 \section{Patterns Generating Redundant rearrangements}
 The most obvious case in which a breaking and reconnection procedure results in a redundant topology is the case of reinserting the source subtree to its original position on the target subtree.
+%MDB: I don't get this next sentence. These are independent clauses joined by a conditional "If".
 If avoiding this operation is trivial, figure \ref{Figure_redundant} shows three different breaking and reconnection operations that avoid the original reinsertion point but still result in the same topology. 
-From the figure, one can notice that one of their commonality is that all these reinsertions are done on the branch neighbouring the original position (see \hyperref[Glossary]{Glossary}).
+From the figure, one can notice that one of their commonalities is that all of these reinsertions concern the branch neighbouring the original position (see \hyperref[Glossary]{Glossary}).
 %This clips the tree at the smallest subtree that includes both clades. %MB: This is possibly coincidental, but possibly also work thinking about. TG: not sure I get you here?
 Rerooting any of these source subtrees on the branch subtending terminal ``C'' and reinserting it to the original breaking branch will also generate the same topology.
 Conversely, this can be seen as breaking the clade consisting of terminals ``A'' and ``B'' and reinserting that clade on its neighboring branch (the one subtending ``C'').
 %TG: not sure also what you meant in this part? Is this for illustrating another example (the same source trees rerooted on the branch to C?) or did you mean that it does the same on other neighbouring positions?
-All of these redundant rearrangements arose from the breaking and moving of the source subtree to a neighbouring branch of the breaking point on the target tree.
+All of these redundant rearrangements arose from the breaking and moving of the source subtree to a branch neighbouring the original breaking point on the target tree.
 In the next section we show how to employ the order of breaking so that only one of these rearrangements is made even when the same breaking event occurs.
+%MDB says: wat?
 
 \begin{figure}[!htbp]
 \centering
@@ -203,9 +206,14 @@ In the next section we show how to employ the order of breaking so that only one
 \end{figure}
 
 %TG: Still not sure where to put this paragraph
+%MDB: Maybe nowhere. I'm struggling to make sense of it.
 Although not all breaking and reinsertion points need to be attempted during a branch rearrangement, all possible non-unique moves do need to be tried to make the search properly heuristic. 
+%MDB: also, wat?
+
 The required breakings (or the enumeration of the possible breaking points) can be made by completing a tree traversal over the initial parent tree (see \hyperref[Glossary]{Glossary}).
 In practice, because the parent trees are usually unrooted during the heuristic search, an arbitrary starting points needs to be selected.
+%It's not really an arbitrary starting point. Entry into even an unrooted tree must begin somewhere. It's just not at the root. 
+
 For the purpose of this paper, we elect the node immediately adjacent to the first enumerated tip (usually tip ``A'' or ``1'') thus making the trees implicitly rooted by the traversal procedure.
 Breaking may then proceed either in postorder or preorder, but in either case, the recursive traversal concludes at the node in which the traversal was initiated.
 
@@ -213,9 +221,9 @@ Breaking may then proceed either in postorder or preorder, but in either case, t
 As described above and illustrated in figure \ref{Figure_redundant}, some breaking and reconnection can result in the same tree topology if the reconnection is done in the neighbouring branches of the insertion point.
 To avoid these redundant rearrangements, we thus only need to commit one of these moves once.
 
-One way simple way to avoid redundant swaps for both SPR and TBR procedures thus implies that:
+A simple way to avoid redundant swaps for both SPR and TBR procedures thus implies that:
 \begin{enumerate}
-    \item The first subtree can be reinserted everywhere on the target tree but its original edge. In the case of a TBR procedure, if the subtree is rerooted, it should however be reinserted on the original position (see Fig.\ref{Figure_Neighbor}; subtree 1).
+    \item The first subtree can be reinserted everywhere on the target tree except for the position that creates the original tree. In the case of a TBR procedure, when the subtree is rerooted, it can be reinserted on the original position (see Fig.\ref{Figure_Neighbor}; subtree 1).
     \item All the following subtrees cannot be reinserted on the original edge and any edges adjacent it (i.e. separated by exactly one node). This rule then applies to all the subtrees generated during the tree rearrangement procedure (see Fig.\ref{Figure_Neighbor}; subtree 2).
 \end{enumerate}
 
@@ -226,8 +234,8 @@ One way simple way to avoid redundant swaps for both SPR and TBR procedures thus
 \label{Figure_Neighbor}
 \end{figure}
 
-Using this simple rule during any tree rearrangement algorithm using the SPR or/and TBR routines allow to properly explore the tree space \citep[i.e. the correct number of topologies are visited, following][]{allen2001subtree} without any redundant tree rearrangement.
-This allows to both save previous computational time as well as avoiding caveats linked to use redundant tree topologies during heuristic searches \citep{goloboff2014bias}.
+Using this simple rule during any tree rearrangement algorithm using the SPR or TBR routines will visit exactly the number of unique trees that can be derived from the original starting tree following][]{allen2001subtree} without any redundant tree rearrangement.
+This saves previous computational time and diminishes biases arising from redundant tree topologies during heuristic searches \citep{goloboff2014bias}.
 
 \section{Glossary}
 \label{Glossary}
