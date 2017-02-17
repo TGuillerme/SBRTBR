@@ -1,0 +1,1 @@
+pandoc -o natural_history_of_scavenging.docx natural\ history\ of\ scavenging.tex --bibliography bibfile.bib --filter pandoc-citeproc --csl apa.csl
